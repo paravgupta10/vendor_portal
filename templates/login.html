@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vendor Registration Portal</title>
+  <link rel="stylesheet" href="static/css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    
+    <!-- Top Heading Section -->
+    <header class="top-text">
+      <h1>Vendor Login Page</h1>
+      <p>Welcome to the Vendor Registration Portal. Please log in to continue.</p>
+    </header>
+
+    <!-- Login Form Section -->
+    <main class="login-container">
+
+      <form action="/login" method="POST">
+        <div class="input-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="Enter your username" required />
+        </div>
+
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter your password" required />
+        </div>
+
+        <button type="submit">Login</button>
+
+        <div class="forgot-password">
+          <a href="#">Forgot Password?</a>
+        </div>
+
+        <div class="signup">
+          <a href="/signup">New Vendor? Sign Up!</a>
+        </div>
+      </form>
+    </main>
+  </div>
+</body>
+
+</html>
