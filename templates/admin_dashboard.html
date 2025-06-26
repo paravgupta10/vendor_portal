@@ -2,22 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Vendor Dashboard</title>
+    <title>Admin Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(to right, #c2e9fb, #a1c4fd);
+            background: linear-gradient(to right, #fbc2eb, #a6c1ee);
             margin: 0;
             padding: 0;
         }
 
         .dashboard-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 50px auto;
             padding: 40px;
-            background-color: white;
+            background-color: #fff;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
@@ -42,7 +42,7 @@
         .buttons a {
             display: inline-block;
             text-decoration: none;
-            margin-right: 15px;
+            margin: 10px 15px 0 0;
             padding: 12px 24px;
             background-color: #6b48ff;
             color: white;
@@ -58,17 +58,23 @@
 <body>
 
     <div class="dashboard-container">
-        <h2>Welcome, {{ company }}!</h2>
-        <p>You are logged in as a <strong>{{ session['user_role'] }}</strong>.</p>
+        <h2>Welcome, Admin!</h2>
+        <p>You are logged in as an <strong>{{ session['user_role'] }}</strong>.</p>
 
         <div class="info">
-            <p><strong>Registration Status:</strong> pending</p>
-            <p><strong>Email:</strong> {{ session.get('email', 'Not shown here') }}</p>
+            <p><strong>Tasks you can perform:</strong></p>
+            <ul>
+                <li>Review and approve vendor registrations</li>
+                <li>Manage vendor data and profiles</li>
+                <li>Send announcements to vendors</li>
+                <li>Monitor system activity</li>
+            </ul>
         </div>
 
         <div class="buttons">
-            <a href="#">Update Profile</a>
-            <a href="#">Upload Documents</a>
+            <a href="#">Review Vendors</a>
+            <a href="#">View All Registrations</a>
+            <a href="#">Send Announcement</a>
             <a href="/logout">Logout</a>
         </div>
     </div>

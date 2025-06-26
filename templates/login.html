@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vendor Registration Portal</title>
+  <title>Vendor Registration Portal - Log In</title>
   <link rel="stylesheet" href="static/css/styles.css" />
 </head>
 <body>
@@ -18,29 +18,83 @@
     <!-- Login Form Section -->
     <main class="login-container">
 
-      <form action="/login" method="POST">
-        <div class="input-group">
-          <label for="username">Username</label>
-          <input type="text" id="username" name="username" placeholder="Enter your username" required />
-        </div>
+      <form method="POST" action="/login">
+    <div class="input-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="Enter your email" required />
+    </div>
 
-        <div class="input-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="Enter your password" required />
-        </div>
+    <div class="input-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" required />
+    </div>
 
-        <button type="submit">Login</button>
+    <div class="input-group">
+      <label for="role">Role</label>
+      <select id="role" name="role" required>
+        <option value="vendor">Vendor</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
 
-        <div class="forgot-password">
-          <a href="#">Forgot Password?</a>
-        </div>
+    <button type="submit">Login</button>
 
-        <div class="signup">
-          <a href="/signup">New Vendor? Sign Up!</a>
-        </div>
-      </form>
+    <div class="signup">
+      <a href="/signup">New Vendor? Sign Up!</a>
+    </div>
+  </form>
+
+      <div class="error-message">
+        {% if error %}
+          <p>{{ error }}</p>
+        {% endif %}
+      </div>
+
     </main>
   </div>
-</body>
 
+
+    <script>
+    // Email format validation
+    function isValidEmail(email) {
+      const pattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+      return pattern.test(email);
+    }
+
+    // On form submit, validate email format
+    document.querySelector('form').addEventListener('submit', function (e) {
+      const emailInput = document.getElementById('email');
+      const passwordInput = document.getElementById('password');
+
+      if (!isValidEmail(emailInput.value)) {
+        alert('Please enter a valid email address.');
+        emailInput.focus();
+        e.preventDefault();
+        return;
+      }
+
+      if (passwordInput.value.length < 6) {
+        alert('Password should be at least 6 characters long.');
+        passwordInput.focus();
+        e.preventDefault();
+        return;
+      }
+    });
+
+    // Toggle password visibility
+    const passwordField = document.getElementById('password');
+    const toggle = document.createElement('span');
+    toggle.textContent = '👁️';
+    toggle.style.cursor = 'pointer';
+    toggle.style.marginLeft = '10px';
+
+    passwordField.parentNode.appendChild(toggle);
+
+    toggle.addEventListener('click', () => {
+      const type = passwordField.type === 'password' ? 'text' : 'password';
+      passwordField.type = type;
+      toggle.textContent = type === 'password' ? '👁️' : '🙈';
+    });
+  </script>
+</body>
 </html>

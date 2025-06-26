@@ -8,29 +8,61 @@
 </head>
 <body>
   <div class="container">
-
     <header class="top-text">
-      <h1>Vendor Signup Page</h1>
+      <h1>Vendor Registration Form</h1>
       <p>Create a new vendor account to register on the portal.</p>
     </header>
 
     <main class="signup-container">
-      <h2>Create an Account</h2>
 
-      <form action="/signup" method="POST">
+      <form action="/signup" method="POST" enctype="multipart/form-data">
+        <!-- Company details section -->
+        <h3>Company Information</h3>
+        <br>
         <div class="input-group">
-          <label for="username">Username</label>
-          <input type="text" id="username" name="username" placeholder="Enter your username" required />
+          <label for="company_name">Company Name</label>
+          <input type="text" id="company_name" name="company_name" placeholder="Enter your company name" required />
         </div>
 
         <div class="input-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder="Enter your email" required />
+          <label for="ownership">Type of Ownership</label>
+          <select id="ownership" name="ownership" required onchange="showOwnershipFields()">
+            <option value="">Select type</option>
+            <option value="sole">Sole Proprietorship</option>
+            <option value="publicltd">Public Limited Company</option>
+            <option value="pvtltd">Private Limited Company</option>
+            <option value="partnership">Partnership</option>
+            <option value="llp">Limited Liability Partnership (LLP)</option>
+            <option value="trust">Trust</option>
+            <option value="ngo">NGO</option>
+          </select>
         </div>
 
         <div class="input-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="Enter your password" required />
+          <label for="address">Address of Registered office</label>
+          <textarea id="address" name="address" placeholder="Enter your registered office address" required></textarea>
+        </div>
+
+        <div id="branch-addresses">
+          <div class="input-group">
+            <label for="baddress_1">Address of Branch Office</label>
+            <textarea id="baddress_1" name="baddress[]" placeholder="Enter your branch address"></textarea>
+          </div>
+        </div>
+
+        <button type="button" onclick="addBranchAddress()">+ Add Another</button>
+        <br>
+        <br>
+
+
+        <div class="input-group">
+          <label for="email">Company Email</label>
+          <input type="email" id="email" name="email" placeholder="Enter your company email" required />
+        </div>
+
+        <div class="input-group">
+          <label for="password">New Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter new password" required />
         </div>
 
         <div class="input-group">
@@ -38,14 +70,301 @@
           <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirm your password" required />
         </div>
 
+        <div class="input-group">
+          <label for="phone">Company Phone Number</label>
+          <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required />
+        </div>
+
+        <div class="input-group">
+          <label for="website">Website URL</label>
+          <input type="url" id="website" name="website" placeholder="Enter your website URL" required/>
+        </div>
+
+        <!-- Sole Fields -->
+        <div id="sole-fields" class="ownership-group" hidden>
+          <h4>Owner Details</h4>
+          <div class="input-group"><label>Name</label><input type="text" name="sole_name" ></div>
+          <div class="input-group"><label>Email</label><input type="email" name="sole_email" ></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="sole_phone" ></div>
+          <div class="input-group"><label>PAN Number</label><input type="text" name="sole_pan" ></div>
+        </div>
+
+        <!-- Partnership Fields -->
+        <div id="partnership-fields" class="ownership-group" hidden>
+          <h4>Partner 1 Details</h4>
+          <div class="input-group"><label>Name</label><input type="text" name="partner1_name" ></div>
+          <div class="input-group"><label>Email</label><input type="email" name="partner1_email" ></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="partner1_phone" ></div>
+          <div class="input-group"><label>PAN Number</label><input type="text" name="partner1_pan" ></div>
+
+          <h4>Partner 2 Details</h4>
+          <div class="input-group"><label>Name</label><input type="text" name="partner2_name" ></div>
+          <div class="input-group"><label>Email</label><input type="email" name="partner2_email" ></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="partner2_phone" ></div>
+          <div class="input-group"><label>PAN Number</label><input type="text" name="partner2_pan" ></div>
+        </div>
+
+        <!-- Pvt Ltd Fields -->
+        <div id="pvtltd-fields" class="ownership-group" hidden>
+          <h4>Director 1 Details</h4>
+          <div class="input-group"><label>Name</label><input type="text" name="director1_name" ></div>
+          <div class="input-group"><label>Email</label><input type="email" name="director1_email" ></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="director1_phone" ></div>
+          <div class="input-group"><label>PAN Number</label><input type="text" name="director1_pan" ></div>
+
+          <h4>Director 2 Details</h4>
+          <div class="input-group"><label>Name</label><input type="text" name="director2_name" ></div>
+          <div class="input-group"><label>Email</label><input type="email" name="director2_email" ></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="director2_phone" ></div>
+          <div class="input-group"><label>PAN Number</label><input type="text" name="director2_pan" ></div>
+        </div>
+
+        <!-- Public Ltd Fields -->
+        <div id="publicltd-fields" class="ownership-group" hidden>
+          <h4>Director 1 Details</h4>
+          <div class="input-group"><label>Name</label><input type="text" name="dir1_name" ></div>
+          <div class="input-group"><label>Email</label><input type="email" name="dir1_email" ></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="dir1_phone" ></div>
+          <div class="input-group"><label>PAN</label><input type="text" name="dir1_pan" ></div>
+
+          <h4>Director 2 Details</h4>
+          <div class="input-group"><label>Name</label><input type="text" name="dir2_name" ></div>
+          <div class="input-group"><label>Email</label><input type="email" name="dir2_email" ></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="dir2_phone" ></div>
+          <div class="input-group"><label>PAN</label><input type="text" name="dir2_pan" ></div>
+
+          <h4>Director 3 Details</h4>
+          <div class="input-group"><label>Name</label><input type="text" name="dir3_name" ></div>
+          <div class="input-group"><label>Email</label><input type="email" name="dir3_email" ></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="dir3_phone" ></div>
+          <div class="input-group"><label>PAN</label><input type="text" name="dir3_pan" ></div>
+        </div>
+
+        <!-- Financial section -->
+          <div class="form-section">
+            <h3>Financial Information</h3>
+            <br>
+
+            <div class="input-group">
+              <label for="tan_number">TAN Number</label>
+              <input type="text" id="tan_number" name="tan_number" placeholder="Enter TAN Number" 
+              pattern="[A-Z]{4}[0-9]{5}[A-Z]{1}" title="TAN must be 10 characters: 4 letters, 5 digits, 1 letter" required>
+            </div>
+
+            <div class="input-group">
+              <label for="tan_proof">Upload TAN Proof (PDF/JPEG only)</label>
+              <input type="file" id="tan_proof" name="tan_proof" accept=".pdf,image/jpeg" required>
+            </div>
+
+            <div class="input-group">
+              <label for="gst_number">GST Number</label>
+              <input type="text" id="gst_number" name="gst_number" placeholder="Enter GST Number" 
+              pattern="\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}Z[A-Z\d]{1}" 
+              title="GST must be a 15-character alphanumeric code" required>
+            </div>
+
+            <div class="input-group">
+              <label for="gst_proof">Upload GST Proof (PDF/JPEG only)</label>
+              <input type="file" id="gst_proof" name="gst_proof" accept=".pdf,image/jpeg" required>
+            </div>
+
+            <div class="input-group">
+              <label for="turnover">Turnover (in cr)</label>
+              <input type="number" step="0.01" id="turnover" name="turnover" placeholder="Enter turnover in crores" required>
+            </div>
+
+            <div class="input-group">
+              <label for="bs_year1">Upload Balance Sheet[24-25] (PDF/JPEG only)</label>
+              <input type="file" id="bs_year1" name="bs_year1" accept=".pdf,image/jpeg" required>
+            </div>
+
+            <div class="input-group">
+              <label for="bs_year2">Upload Balance Sheet[23-24] (PDF/JPEG only)</label>
+              <input type="file" id="bs_year2" name="bs_year2" accept=".pdf,image/jpeg" required>
+            </div>
+
+            <div class="input-group"> 
+              <label for="bs_year3">Upload Balance Sheet[22-23] (PDF/JPEG only)</label>
+              <input type="file" id="bs_year3" name="bs_year3" accept=".pdf,image/jpeg" required>
+            </div>
+          </div>
+
+
+        <!-- Products and Services section -->
+         <div class="form-section">
+          <h3>Products & Services Offered</h3>
+          <br>
+          <p>Please list the products or services your company offers. You can add more fields if needed.</p>
+          <br>
+
+          <div id="product-services-container">
+            <div class="input-group">
+              <label for="product_1">Product/Service 1</label>
+              <input type="text" id="product_1" name="products[]" placeholder="Enter product or service" required>
+            </div>
+
+            <div class="input-group">
+              <label for="product_2">Product/Service 2</label>
+              <input type="text" id="product_2" name="products[]" placeholder="Enter product or service" required>
+            </div>
+
+            <div class="input-group">
+              <label for="product_3">Product/Service 3</label>
+              <input type="text" id="product_3" name="products[]" placeholder="Enter product or service" required>
+            </div>
+          </div>
+
+          <button type="button" onclick="addProductField()">+ Add More</button>
+        </div>
+        <br>
+
         <button type="submit">Sign Up</button>
 
+
         <div class="login-link">
-          <a href="/login">Already have an account? Log In</a>
+          <a href="/login">Already have an account? Log In!</a>
         </div>
       </form>
     </main>
-
   </div>
+
+
+  <script>
+  function showOwnershipFields() {
+  const groups = document.querySelectorAll('.ownership-group');
+  groups.forEach(group => {
+    group.hidden = true;
+    group.querySelectorAll('input').forEach(input => {
+      input.disabled = true;
+      input.value = '';
+    });
+  });
+
+  const ownership = document.getElementById('ownership').value;
+  if (ownership) {
+    const activeGroup = document.getElementById(`${ownership}-fields`);
+    if (activeGroup) {
+      activeGroup.hidden = false;
+      activeGroup.querySelectorAll('input').forEach(input => {
+        input.disabled = false;
+        // Fields remain optional; not setting `required`
+      });
+    }
+  }
+}
+
+  let branchAddressCount = 1;
+
+  function addBranchAddress() {
+    branchAddressCount++;
+    const container = document.getElementById('branch-addresses');
+
+    const newGroup = document.createElement('div');
+    newGroup.className = 'input-group';
+
+    const newLabel = document.createElement('label');
+    newLabel.setAttribute('for', `baddress_${branchAddressCount}`);
+    newLabel.textContent = `Address of Branch Office ${branchAddressCount}`;
+
+    const newTextarea = document.createElement('textarea');
+    newTextarea.id = `baddress_${branchAddressCount}`;
+    newTextarea.name = 'baddress[]';
+    newTextarea.placeholder = 'Enter your branch address';
+
+    newGroup.appendChild(newLabel);
+    newGroup.appendChild(newTextarea);
+    container.appendChild(newGroup);
+  }
+
+
+  function addProductField() {
+    const container = document.getElementById('product-services-container');
+    const count = container.querySelectorAll('input').length + 1;
+
+    const inputGroup = document.createElement('div');
+    inputGroup.className = 'input-group';
+
+    const label = document.createElement('label');
+    label.setAttribute('for', `product_${count}`);
+    label.innerText = `Product/Service ${count}`;
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'products[]';
+    input.id = `product_${count}`;
+    input.placeholder = 'Enter product or service';
+    input.required = true;
+
+    inputGroup.appendChild(label);
+    inputGroup.appendChild(input);
+    container.appendChild(inputGroup);
+  }
+
+
+  // Validate PAN, TAN, GST formats
+  function validateFormat(id, pattern, message) {
+    const input = document.getElementById(id);
+    if (input && !new RegExp(pattern).test(input.value)) {
+      alert(message);
+      input.focus();
+      return false;
+    }
+    return true;
+  }
+
+  // Validate uploaded files
+  function validateFileInput(id) {
+  const fileInput = document.getElementById(id);
+  if (!fileInput.files.length) {
+    alert(`Please upload a file for ${id}.`);
+    fileInput.focus();
+    return false;
+  }
+  const file = fileInput.files[0];
+  const validTypes = ['application/pdf', 'image/jpeg'];
+  if (!validTypes.includes(file.type)) {
+    alert(`Invalid file type for ${id}. Please upload PDF or JPEG.`);
+    fileInput.focus();
+    return false;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    alert(`File size for ${id} exceeds 5MB limit.`);
+    fileInput.focus();
+    return false;
+  }
+  return true;
+}
+
+  // On form submit, run validations
+  document.querySelector('form').addEventListener('submit', function (e) {
+  const ownership = document.getElementById('ownership').value;
+  if (!ownership) {
+    alert('Please select an ownership type.');
+    e.preventDefault();
+    return;
+  }
+  const password = document.getElementById("password").value;
+  const confirm = document.getElementById("confirm-password").value;
+  if (password !== confirm) {
+    alert("Passwords do not match.");
+    e.preventDefault();
+    return;
+  }
+
+  const isValidTAN = validateFormat('tan_number', '^[A-Z]{4}[0-9]{5}[A-Z]$', 'Invalid TAN format');
+  const isValidGST = validateFormat('gst_number', '^\\d{2}[A-Z]{5}\\d{4}[A-Z]{1}[A-Z\\d]{1}Z[A-Z\\d]{1}$', 'Invalid GST format');
+  const isValidPhone = validateFormat('phone', '^[6-9][0-9]{9}$', 'Invalid phone number format');
+  const filesToCheck = ['tan_proof', 'gst_proof', 'bs_year1', 'bs_year2', 'bs_year3'];
+  const areFilesValid = filesToCheck.every(id => validateFileInput(id));
+
+  if (!(isValidTAN && isValidGST && isValidPhone && areFilesValid)) {
+    e.preventDefault();
+  }
+});
+
+  // Trigger display of ownership-specific fields if coming from back button
+  document.addEventListener('DOMContentLoaded', showOwnershipFields);
+</script>
+
 </body>
 </html>
