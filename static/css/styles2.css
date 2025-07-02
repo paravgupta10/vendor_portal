@@ -1,0 +1,190 @@
+:root {
+  --button-bg: #425a3f;
+  --button-hover: #2f502a;
+  --accent-blue: #007BFF;
+  --form-radius: 5px;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.required-label::after {
+  content: " *";
+  color: red;
+}
+
+body {
+  margin: 0;
+  position: relative;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #b3d9aa;
+  background-size: cover;
+  color: #000;
+}
+
+/* Centered container with light theme */
+.container {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+/* Top text section */
+.top-text {
+  background-color: #f9f9f9;
+  padding: 25px;
+  border-radius: 8px;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #333;
+}
+
+.top-text h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #050607;
+}
+.top-text p {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #050607;
+}
+
+/* Form layout */
+.signup-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Input group spacing */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 25px;
+}
+
+
+.form-section {
+  background: #f4f6f7;
+  border-radius: 10px;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+
+/* Headings spacing */
+h3, h4 {
+  margin-top: 30px;
+  margin-bottom: 15px;
+  color: #444;
+}
+
+/* Section description spacing */
+.form-section p {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* File input spacing */
+.input-group input[type="file"] {
+  margin-top: 5px;
+}
+
+/* Input and label styling */
+.input-group label {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus {
+  outline: none;
+  border-color: #007BFF;
+  box-shadow: 0 0 5px #007BFF;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+/* Small help text */
+small {
+  color: #666;
+}
+
+/* Buttons */
+button {
+  background-color: var(--button-bg);
+  color: #fff;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: var(--button-hover);
+}
+
+.btn-logout {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  z-index: 99999;
+  background-color: #dc3545;
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #dc3545;
+  text-decoration: none;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-logout:hover {
+  background-color: #ffeaea;
+  text-decoration: underline;
+}
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    margin: 20px;
+    padding: 20px;
+  }
+
+  .top-text h1 {
+    font-size: 24px;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .input-group input,
+  .input-group textarea,
+  .input-group select {
+    font-size: 14px;
+  }
+
+  button {
+    padding: 10px;
+    font-size: 15px;
+  }
+
+  .top-text h1 {
+    font-size: 20px;
+  }
+}

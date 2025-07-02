@@ -3,29 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vendor Registration Portal - Sign Up</title>
-  <link rel="stylesheet" href="static/css/styles.css" />
+  <title>Vendor Registration Portal - Vendor Details</title>
+  <link rel="stylesheet" href="static/css/styles2.css" />
 </head>
 <body>
+  <a href="/logout" class="btn-logout">Logout</a>
   <div class="container">
     <header class="top-text">
-      <h1>Vendor Registration Form</h1>
-      <p>Create a new vendor account to register on the portal.</p>
+
+      <h1>Submit Vendor Details</h1>
+      <p>Welcome, {{ session['email'] }}!</p>
+      <p>As a vendor, you can register your company and provide necessary details to get started.</p>
+      <p>Ensure all information is accurate and complete to avoid delays in the registration process.</p>
+      <p>Once you submit your details, our team will review them and get back to you shortly.</p>
+      <p>Thank you for choosing our platform for your business needs!</p>
+      <p>We look forward to a successful partnership.</p>
+      <p>For any queries, please contact our support team.</p>
     </header>
 
     <main class="signup-container">
 
       <form action="/signup" method="POST" enctype="multipart/form-data">
+      <div class="form-section">
         <!-- Company details section -->
         <h3>Company Information</h3>
-        <br>
         <div class="input-group">
-          <label for="company_name">Company Name</label>
-          <input type="text" id="company_name" name="company_name" placeholder="Enter your company name" required />
+          <label for="company_name" class="required-label">Company Name</label>
+          <input type="text" id="company_name" name="company_name" placeholder="Enter your company name" required maxlength="100"/>
         </div>
 
         <div class="input-group">
-          <label for="ownership">Type of Ownership</label>
+          <label for="ownership" class="required-label">Type of Ownership</label>
           <select id="ownership" name="ownership" required onchange="showOwnershipFields()">
             <option value="">Select type</option>
             <option value="sole">Sole Proprietorship</option>
@@ -37,155 +45,209 @@
             <option value="ngo">NGO</option>
           </select>
         </div>
-
+        
         <div class="input-group">
-          <label for="address">Address of Registered office</label>
-          <textarea id="address" name="address" placeholder="Enter your registered office address" required></textarea>
+          <label for="address" class="required-label">Address of Registered office</label>
+          <textarea id="address" name="address" placeholder="Enter your registered office address" required maxlength="100"></textarea>
+          <small>(Max 100 characters)</small>
         </div>
 
+        <div class="input-group">
+          <label for="city" class="required-label">City</label>
+          <input type="text" id="city" name="city" placeholder="Enter your regd office city" required maxlength="30"/>
+        </div>
+
+        <div class="input-group">
+          <label for="state" class="required-label">State</label>
+          <input type="text" id="state" name="state" placeholder="Enter your regd office state" required maxlength="30"/>
+        </div>
+
+        <div class="input-group">
+          <label for="country" class="required-label">Country</label>
+          <input type="text" id="country" name="country" placeholder="Enter your regd office country" required maxlength="30"/>
+        </div>
+
+        
         <div id="branch-addresses">
           <div class="input-group">
             <label for="baddress_1">Address of Branch Office</label>
-            <textarea id="baddress_1" name="baddress[]" placeholder="Enter your branch address"></textarea>
+            <textarea id="baddress_1" name="baddress[]" placeholder="Enter your branch address" maxlength="100"></textarea>
+            <small>(Max 100 characters)</small>
+          </div>
+
+          <div class="input-group">
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" placeholder="Enter your branch office city" maxlength="30"/>
+          </div>
+
+          <div class="input-group">
+            <label for="state">State</label>
+            <input type="text" id="state" name="state" placeholder="Enter your branch office state" maxlength="30"/>
+          </div>
+
+          <div class="input-group">
+            <label for="country">Country</label>
+            <input type="text" id="country" name="country" placeholder="Enter your branch office country" maxlength="30"/>
           </div>
         </div>
 
-        <button type="button" onclick="addBranchAddress()">+ Add Another</button>
+        <button type="button" onclick="addBranchAddress()">+ Add Another Branch Address</button>
         <br>
         <br>
-
-
         <div class="input-group">
-          <label for="email">Company Email</label>
-          <input type="email" id="email" name="email" placeholder="Enter your company email" required />
+          <label for="phone" class="required-label">Company Phone Number</label>
+          <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"/>
         </div>
 
         <div class="input-group">
-          <label for="password">New Password</label>
-          <input type="password" id="password" name="password" placeholder="Enter new password" required />
-        </div>
-
-        <div class="input-group">
-          <label for="confirm-password">Confirm Password</label>
-          <input type="password" id="confirm-password" name="confirm_password" placeholder="Confirm your password" required />
-        </div>
-
-        <div class="input-group">
-          <label for="phone">Company Phone Number</label>
-          <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required />
-        </div>
-
-        <div class="input-group">
-          <label for="website">Website URL</label>
-          <input type="url" id="website" name="website" placeholder="Enter your website URL" required/>
+          <label for="website" class="required-label">Website URL</label>
+          <input type="url" id="website" name="website" placeholder="Enter your website URL" required maxlength="100"/>
         </div>
 
         <!-- Sole Fields -->
         <div id="sole-fields" class="ownership-group" hidden>
-          <h4>Owner Details</h4>
-          <div class="input-group"><label>Name</label><input type="text" name="sole_name" ></div>
-          <div class="input-group"><label>Email</label><input type="email" name="sole_email" ></div>
-          <div class="input-group"><label>Phone</label><input type="tel" name="sole_phone" ></div>
-          <div class="input-group"><label>PAN Number</label><input type="text" name="sole_pan" ></div>
+          <h4>Proprietor Details</h4>
+          <div class="input-group"><label>Name</label><input type="text" name="sole_name" maxlength="100"></div>
+          <div class="input-group"><label>Email</label><input type="email" name="sole_email" maxlength="100"></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="sole_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits" ></div>
+          <div class="input-group"><label>PAN Number</label><input type="text" name="sole_pan"  maxlength="10"></div>
         </div>
 
         <!-- Partnership Fields -->
         <div id="partnership-fields" class="ownership-group" hidden>
           <h4>Partner 1 Details</h4>
-          <div class="input-group"><label>Name</label><input type="text" name="partner1_name" ></div>
-          <div class="input-group"><label>Email</label><input type="email" name="partner1_email" ></div>
-          <div class="input-group"><label>Phone</label><input type="tel" name="partner1_phone" ></div>
-          <div class="input-group"><label>PAN Number</label><input type="text" name="partner1_pan" ></div>
+          <div class="input-group"><label>Name</label><input type="text" name="partner1_name" maxlength="100"></div>
+          <div class="input-group"><label>Email</label><input type="email" name="partner1_email" maxlength="100"></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="partner1_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+          <div class="input-group"><label>PAN Number</label><input type="text" name="partner1_pan"  maxlength="10"></div>
 
           <h4>Partner 2 Details</h4>
-          <div class="input-group"><label>Name</label><input type="text" name="partner2_name" ></div>
-          <div class="input-group"><label>Email</label><input type="email" name="partner2_email" ></div>
-          <div class="input-group"><label>Phone</label><input type="tel" name="partner2_phone" ></div>
-          <div class="input-group"><label>PAN Number</label><input type="text" name="partner2_pan" ></div>
+          <div class="input-group"><label>Name</label><input type="text" name="partner2_name" maxlength="100"></div>
+          <div class="input-group"><label>Email</label><input type="email" name="partner2_email" maxlength="100"></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="partner2_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+          <div class="input-group"><label>PAN Number</label><input type="text" name="partner2_pan"  maxlength="10"></div>
+
+          <button type="button" onclick="addPartner()">+ Add Another Partner</button>
         </div>
+        
+        <br>
+        <br>
+
+        <!-- LLP Fields -->
+        <div id="llp-fields" class="ownership-group" hidden>
+          <h4>Partner 1 Details</h4>
+          <div class="input-group"><label>Name</label><input type="text" name="partner1_name" maxlength="100"></div>
+          <div class="input-group"><label>Email</label><input type="email" name="partner1_email" maxlength="100"></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="partner1_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+          <div class="input-group"><label>PAN Number</label><input type="text" name="partner1_pan"  maxlength="10"></div>
+
+          <h4>Partner 2 Details</h4>
+          <div class="input-group"><label>Name</label><input type="text" name="partner2_name" maxlength="100"></div>
+          <div class="input-group"><label>Email</label><input type="email" name="partner2_email" maxlength="100"></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="partner2_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+          <div class="input-group"><label>PAN Number</label><input type="text" name="partner2_pan"  maxlength="10"></div>
+        
+          <button type="button" onclick="addLLP()">+ Add Another Partner</button>
+        </div>
+        <br>
+        <br>
+        
 
         <!-- Pvt Ltd Fields -->
         <div id="pvtltd-fields" class="ownership-group" hidden>
           <h4>Director 1 Details</h4>
-          <div class="input-group"><label>Name</label><input type="text" name="director1_name" ></div>
-          <div class="input-group"><label>Email</label><input type="email" name="director1_email" ></div>
-          <div class="input-group"><label>Phone</label><input type="tel" name="director1_phone" ></div>
-          <div class="input-group"><label>PAN Number</label><input type="text" name="director1_pan" ></div>
+          <div class="input-group"><label>Name</label><input type="text" name="director1_name" maxlength="100"></div>
+          <div class="input-group"><label>Email</label><input type="email" name="director1_email" maxlength="100"></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="director1_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+          <div class="input-group"><label>PAN Number</label><input type="text" name="director1_pan"  maxlength="10"></div>
 
           <h4>Director 2 Details</h4>
-          <div class="input-group"><label>Name</label><input type="text" name="director2_name" ></div>
-          <div class="input-group"><label>Email</label><input type="email" name="director2_email" ></div>
-          <div class="input-group"><label>Phone</label><input type="tel" name="director2_phone" ></div>
-          <div class="input-group"><label>PAN Number</label><input type="text" name="director2_pan" ></div>
+          <div class="input-group"><label>Name</label><input type="text" name="director2_name" maxlength="100"></div>
+          <div class="input-group"><label>Email</label><input type="email" name="director2_email" maxlength="100"></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="director2_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+          <div class="input-group"><label>PAN Number</label><input type="text" name="director2_pan"  maxlength="10"></div>
+        
+          <button type="button" onclick="addPvtDirector()">+ Add Another Director</button>
         </div>
+        <br>
+        <br>
 
         <!-- Public Ltd Fields -->
         <div id="publicltd-fields" class="ownership-group" hidden>
           <h4>Director 1 Details</h4>
-          <div class="input-group"><label>Name</label><input type="text" name="dir1_name" ></div>
-          <div class="input-group"><label>Email</label><input type="email" name="dir1_email" ></div>
-          <div class="input-group"><label>Phone</label><input type="tel" name="dir1_phone" ></div>
-          <div class="input-group"><label>PAN</label><input type="text" name="dir1_pan" ></div>
+          <div class="input-group"><label>Name</label><input type="text" name="dir1_name" maxlength="100"></div>
+          <div class="input-group"><label>Email</label><input type="email" name="dir1_email" maxlength="100"></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="dir1_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+          <div class="input-group"><label>PAN</label><input type="text" name="dir1_pan"  maxlength="10"></div>
 
           <h4>Director 2 Details</h4>
-          <div class="input-group"><label>Name</label><input type="text" name="dir2_name" ></div>
-          <div class="input-group"><label>Email</label><input type="email" name="dir2_email" ></div>
-          <div class="input-group"><label>Phone</label><input type="tel" name="dir2_phone" ></div>
-          <div class="input-group"><label>PAN</label><input type="text" name="dir2_pan" ></div>
+          <div class="input-group"><label>Name</label><input type="text" name="dir2_name" maxlength="100"></div>
+          <div class="input-group"><label>Email</label><input type="email" name="dir2_email" maxlength="100"></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="dir2_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+          <div class="input-group"><label>PAN</label><input type="text" name="dir2_pan"  maxlength="10"></div>
 
           <h4>Director 3 Details</h4>
-          <div class="input-group"><label>Name</label><input type="text" name="dir3_name" ></div>
-          <div class="input-group"><label>Email</label><input type="email" name="dir3_email" ></div>
-          <div class="input-group"><label>Phone</label><input type="tel" name="dir3_phone" ></div>
-          <div class="input-group"><label>PAN</label><input type="text" name="dir3_pan" ></div>
+          <div class="input-group"><label>Name</label><input type="text" name="dir3_name" maxlength="100"></div>
+          <div class="input-group"><label>Email</label><input type="email" name="dir3_email" maxlength="100"></div>
+          <div class="input-group"><label>Phone</label><input type="tel" name="dir3_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+          <div class="input-group"><label>PAN</label><input type="text" name="dir3_pan" maxlength="10"></div>
+        
+          <button type="button" onclick="addPubDirector()">+ Add Another Director</button>
+        </div>
         </div>
 
         <!-- Financial section -->
           <div class="form-section">
             <h3>Financial Information</h3>
-            <br>
 
             <div class="input-group">
-              <label for="tan_number">TAN Number</label>
+              <label for="tan_number" class="required-label">TAN Number</label>
               <input type="text" id="tan_number" name="tan_number" placeholder="Enter TAN Number" 
-              pattern="[A-Z]{4}[0-9]{5}[A-Z]{1}" title="TAN must be 10 characters: 4 letters, 5 digits, 1 letter" required>
+              pattern="[A-Z]{4}[0-9]{5}[A-Z]{1}" title="TAN must be 10 characters: 4 letters, 5 digits, 1 letter" required maxlength="10">
             </div>
 
             <div class="input-group">
-              <label for="tan_proof">Upload TAN Proof (PDF/JPEG only)</label>
+              <label for="tan_proof" class="required-label">Upload TAN Proof (PDF/JPEG only)</label>
               <input type="file" id="tan_proof" name="tan_proof" accept=".pdf,image/jpeg" required>
+              <small id="tan_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
             </div>
 
             <div class="input-group">
-              <label for="gst_number">GST Number</label>
+              <label for="gst_number" class="required-label">GST Number</label>
               <input type="text" id="gst_number" name="gst_number" placeholder="Enter GST Number" 
-              pattern="\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}Z[A-Z\d]{1}" 
-              title="GST must be a 15-character alphanumeric code" required>
+              pattern="^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$"
+              title="GST must be a 15-character alphanumeric code" required maxlength="15">
             </div>
 
             <div class="input-group">
-              <label for="gst_proof">Upload GST Proof (PDF/JPEG only)</label>
+              <label for="gst_proof" class="required-label">Upload GST Proof (PDF/JPEG only)</label>
               <input type="file" id="gst_proof" name="gst_proof" accept=".pdf,image/jpeg" required>
+              <small id="gst_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
+
             </div>
 
             <div class="input-group">
-              <label for="turnover">Turnover (in cr)</label>
-              <input type="number" step="0.01" id="turnover" name="turnover" placeholder="Enter turnover in crores" required>
+              <label for="turnover" class="required-label">Turnover (in cr)</label>
+              <input type="number" step="0.01" id="turnover" name="turnover" placeholder="Enter turnover in crores" required min="0" max="1000">
             </div>
-
+            <p>Upload last three years Balance Sheet(Recent first)</p>
             <div class="input-group">
-              <label for="bs_year1">Upload Balance Sheet[24-25] (PDF/JPEG only)</label>
+              <label for="bs_year1" class="required-label">Upload Balance Sheet(Year1) (PDF/JPEG only)</label>
               <input type="file" id="bs_year1" name="bs_year1" accept=".pdf,image/jpeg" required>
+              <small id="bs1_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
             </div>
 
             <div class="input-group">
-              <label for="bs_year2">Upload Balance Sheet[23-24] (PDF/JPEG only)</label>
+              <label for="bs_year2" class="required-label">Upload Balance Sheet(Year 2) (PDF/JPEG only)</label>
               <input type="file" id="bs_year2" name="bs_year2" accept=".pdf,image/jpeg" required>
+              <small id="bs2_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
             </div>
 
             <div class="input-group"> 
-              <label for="bs_year3">Upload Balance Sheet[22-23] (PDF/JPEG only)</label>
+              <label for="bs_year3" class="required-label">Upload Balance Sheet(Year 3) (PDF/JPEG only)</label>
               <input type="file" id="bs_year3" name="bs_year3" accept=".pdf,image/jpeg" required>
+              <small id="bs3_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
+
             </div>
           </div>
 
@@ -193,178 +255,33 @@
         <!-- Products and Services section -->
          <div class="form-section">
           <h3>Products & Services Offered</h3>
-          <br>
           <p>Please list the products or services your company offers. You can add more fields if needed.</p>
-          <br>
 
           <div id="product-services-container">
             <div class="input-group">
-              <label for="product_1">Product/Service 1</label>
-              <input type="text" id="product_1" name="products[]" placeholder="Enter product or service" required>
+              <label for="product_1" class="required-label">Product/Service 1</label>
+              <input type="text" id="product_1" name="products[]" placeholder="Enter product or service" required maxlength="100">
             </div>
 
             <div class="input-group">
-              <label for="product_2">Product/Service 2</label>
-              <input type="text" id="product_2" name="products[]" placeholder="Enter product or service" required>
+              <label for="product_2" class="required-label">Product/Service 2</label>
+              <input type="text" id="product_2" name="products[]" placeholder="Enter product or service" required maxlength="100">
             </div>
 
             <div class="input-group">
-              <label for="product_3">Product/Service 3</label>
-              <input type="text" id="product_3" name="products[]" placeholder="Enter product or service" required>
+              <label for="product_3" class="required-label">Product/Service 3</label>
+              <input type="text" id="product_3" name="products[]" placeholder="Enter product or service" required maxlength="100">
             </div>
           </div>
 
-          <button type="button" onclick="addProductField()">+ Add More</button>
+          <button type="button" onclick="addProductField()">+ Add More Product/Services</button>
         </div>
-        <br>
 
-        <button type="submit">Sign Up</button>
+        <button type="submit">Submit Details</button>
 
-
-        <div class="login-link">
-          <a href="/login">Already have an account? Log In!</a>
-        </div>
       </form>
     </main>
   </div>
-
-
-  <script>
-  function showOwnershipFields() {
-  const groups = document.querySelectorAll('.ownership-group');
-  groups.forEach(group => {
-    group.hidden = true;
-    group.querySelectorAll('input').forEach(input => {
-      input.disabled = true;
-      input.value = '';
-    });
-  });
-
-  const ownership = document.getElementById('ownership').value;
-  if (ownership) {
-    const activeGroup = document.getElementById(`${ownership}-fields`);
-    if (activeGroup) {
-      activeGroup.hidden = false;
-      activeGroup.querySelectorAll('input').forEach(input => {
-        input.disabled = false;
-        // Fields remain optional; not setting `required`
-      });
-    }
-  }
-}
-
-  let branchAddressCount = 1;
-
-  function addBranchAddress() {
-    branchAddressCount++;
-    const container = document.getElementById('branch-addresses');
-
-    const newGroup = document.createElement('div');
-    newGroup.className = 'input-group';
-
-    const newLabel = document.createElement('label');
-    newLabel.setAttribute('for', `baddress_${branchAddressCount}`);
-    newLabel.textContent = `Address of Branch Office ${branchAddressCount}`;
-
-    const newTextarea = document.createElement('textarea');
-    newTextarea.id = `baddress_${branchAddressCount}`;
-    newTextarea.name = 'baddress[]';
-    newTextarea.placeholder = 'Enter your branch address';
-
-    newGroup.appendChild(newLabel);
-    newGroup.appendChild(newTextarea);
-    container.appendChild(newGroup);
-  }
-
-
-  function addProductField() {
-    const container = document.getElementById('product-services-container');
-    const count = container.querySelectorAll('input').length + 1;
-
-    const inputGroup = document.createElement('div');
-    inputGroup.className = 'input-group';
-
-    const label = document.createElement('label');
-    label.setAttribute('for', `product_${count}`);
-    label.innerText = `Product/Service ${count}`;
-
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.name = 'products[]';
-    input.id = `product_${count}`;
-    input.placeholder = 'Enter product or service';
-    input.required = true;
-
-    inputGroup.appendChild(label);
-    inputGroup.appendChild(input);
-    container.appendChild(inputGroup);
-  }
-
-
-  // Validate PAN, TAN, GST formats
-  function validateFormat(id, pattern, message) {
-    const input = document.getElementById(id);
-    if (input && !new RegExp(pattern).test(input.value)) {
-      alert(message);
-      input.focus();
-      return false;
-    }
-    return true;
-  }
-
-  // Validate uploaded files
-  function validateFileInput(id) {
-  const fileInput = document.getElementById(id);
-  if (!fileInput.files.length) {
-    alert(`Please upload a file for ${id}.`);
-    fileInput.focus();
-    return false;
-  }
-  const file = fileInput.files[0];
-  const validTypes = ['application/pdf', 'image/jpeg'];
-  if (!validTypes.includes(file.type)) {
-    alert(`Invalid file type for ${id}. Please upload PDF or JPEG.`);
-    fileInput.focus();
-    return false;
-  }
-  if (file.size > 5 * 1024 * 1024) {
-    alert(`File size for ${id} exceeds 5MB limit.`);
-    fileInput.focus();
-    return false;
-  }
-  return true;
-}
-
-  // On form submit, run validations
-  document.querySelector('form').addEventListener('submit', function (e) {
-  const ownership = document.getElementById('ownership').value;
-  if (!ownership) {
-    alert('Please select an ownership type.');
-    e.preventDefault();
-    return;
-  }
-  const password = document.getElementById("password").value;
-  const confirm = document.getElementById("confirm-password").value;
-  if (password !== confirm) {
-    alert("Passwords do not match.");
-    e.preventDefault();
-    return;
-  }
-
-  const isValidTAN = validateFormat('tan_number', '^[A-Z]{4}[0-9]{5}[A-Z]$', 'Invalid TAN format');
-  const isValidGST = validateFormat('gst_number', '^\\d{2}[A-Z]{5}\\d{4}[A-Z]{1}[A-Z\\d]{1}Z[A-Z\\d]{1}$', 'Invalid GST format');
-  const isValidPhone = validateFormat('phone', '^[6-9][0-9]{9}$', 'Invalid phone number format');
-  const filesToCheck = ['tan_proof', 'gst_proof', 'bs_year1', 'bs_year2', 'bs_year3'];
-  const areFilesValid = filesToCheck.every(id => validateFileInput(id));
-
-  if (!(isValidTAN && isValidGST && isValidPhone && areFilesValid)) {
-    e.preventDefault();
-  }
-});
-
-  // Trigger display of ownership-specific fields if coming from back button
-  document.addEventListener('DOMContentLoaded', showOwnershipFields);
-</script>
-
+  <script src="{{ url_for('static', filename='js/signup.js') }}"></script>
 </body>
 </html>

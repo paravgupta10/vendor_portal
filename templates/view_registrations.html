@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vendor Registrations</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #b3d9aa;
+      background-size: cover;
+      padding: 20px;
+    }
+
+    .dashboard-container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 30px;
+      color: #425a3f; /* Green */
+      margin-bottom: 20px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1200px;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+      white-space: nowrap;
+    }
+
+    th {
+      background-color: #425a3f; /* Green */
+      color: white;
+    }
+
+    td {
+      background-color: #f9f9f9;
+    }
+
+    tr:hover td {
+      background-color: #f1f1f1;
+    }
+
+    a.button {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 24px;
+      background-color: #425a3f;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    a.button:hover {
+      background-color: #2f502a;
+    }
+
+
+    @media (max-width: 768px) {
+      table {
+        min-width: unset;
+        font-size: 14px;
+      }
+
+      th, td {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-container">
+    <h2>All Vendor Registrations</h2>
+
+    {% if vendors %}
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Ownership</th>
+              <th>Website</th>
+              <th>Turnover</th>
+              <th>Registered Address</th>
+              <th>Branch Addresses</th>
+              <th>GST</th>
+              <th>TAN</th>
+              <th>Product/Services</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in vendors %}
+            <tr>
+              <td>{{ v.company_name }}</td>
+              <td>{{ v.email }}</td>
+              <td>{{ v.phone }}</td>
+              <td>{{ v.ownership_type }}</td>
+              <td>{{ v.website }}</td>
+              <td>{{ v.turnover }}</td>
+              <td>{{ v.registered_address }}</td>
+              <td>{{ v.branch_addresses }}</td>
+              <td>{{ v.gst_number }}</td>
+              <td>{{ v.tan_number }}</td>
+              <td>{{ v.product_services }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p>No registrations found.</p>
+    {% endif %}
+
+    <a class="button" href="{{ url_for('admin_dashboard') }}">⬅ Back to Dashboard</a>
+  </div>
+</body>
+</html>

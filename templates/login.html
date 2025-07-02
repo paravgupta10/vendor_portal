@@ -3,98 +3,140 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Vendor Registration Portal - Log In</title>
+  <title>HomePage</title>
   <link rel="stylesheet" href="static/css/styles.css" />
 </head>
 <body>
+  <h3>VENDOR REGISTRATION PORTAL</h3>
   <div class="container">
-    
-    <!-- Top Heading Section -->
-    <header class="top-text">
-      <h1>Vendor Login Page</h1>
-      <p>Welcome to the Vendor Registration Portal. Please log in to continue.</p>
-    </header>
-
-    <!-- Login Form Section -->
-    <main class="login-container">
-
-      <form method="POST" action="/login">
-    <div class="input-group">
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" placeholder="Enter your email" required />
+    <div class="left-section">
+      <p style="font-size: 19px; color:black;">Simplifying Vendor Onboarding, Powering Business Growth!</p>
     </div>
 
-    <div class="input-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" placeholder="Enter your password" required />
-    </div>
+    <div class="right-section">
+      <img src="static/images/login2.jpeg" alt="Skeleton Illustration" />
+      <h4 id="form-title">Login to your Account</h4>
 
-    <div class="input-group">
-      <label for="role">Role</label>
-      <select id="role" name="role" required>
-        <option value="vendor">Vendor</option>
-        <option value="admin">Admin</option>
-      </select>
-    </div>
+      <!-- Login Form -->
+      <form id="login-form" method="POST" action="/login" onsubmit="return validateLogin(event)">
+        <div class="form-group">
+          <label for="login-email" style="text-align:left;" class="required-label">Email</label>
+          <input type="email" id="login-email" name="email" placeholder="mail@gmail.com" required />
+        </div>
 
-    <button type="submit">Login</button>
+        <div class="form-group">
+          <label for="login-password" style="text-align:left;" class="required-label">Password</label>
+          <input type="password" id="login-password" name="password" placeholder="••••••••" required />
+        </div>
 
-    <div class="signup">
-      <a href="/signup">New Vendor? Sign Up!</a>
-    </div>
-  </form>
+        <div class="forgot">
+          <a href="#" style="color: #030404;">Forgot Password?</a>
+        </div>
+        <br>
 
-      <div class="error-message">
-        {% if error %}
-          <p>{{ error }}</p>
-        {% endif %}
+        <button type="submit">Login</button>
+
+        <!-- Error Message (Flask Injected) -->
+        <div class="error-message">
+          {% if error %}
+            <p style="color: red;">{{ error }}</p>
+          {% endif %}
+        </div>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signup-form" method="POST" action="/register_user" style="display: none;" onsubmit="return validateSignup(event)">
+        <div class="form-group">
+          <label for="signup-email" style="text-align:left;">Email</label>
+          <input type="email" id="signup-email" name="email" placeholder="mail@gmail.com" required />
+        </div>
+        <div class="form-group">
+          <label for="signup-password" style="text-align:left;">New Password</label>
+          <input type="password" id="signup-password" name="password" placeholder="••••••••" required />
+        </div>
+        <div class="form-group">
+          <label for="confirm-password" style="text-align:left;">Confirm Password</label>
+          <input type="password" id="confirm-password" name="confirm_password" placeholder="••••••••" required />
+        </div>
+        <button type="submit">Sign Up</button>
+      </form>
+
+      <!-- Switch between forms -->
+      <div class="switch-form" id="switch-form">
+        Not Registered Yet? <a href="#" onclick="showSignup()">Create an account</a>
       </div>
-
-    </main>
+    </div>
   </div>
 
+  <script>
+  function showSignup() {
+    document.getElementById('form-title').textContent = 'Create your Account';
+    document.getElementById('login-form').style.display = 'none';
+    document.getElementById('signup-form').style.display = 'block';
+    document.getElementById('switch-form').innerHTML =
+      'Already have an account? <a href="#" onclick="showLogin()">Login</a>';
+  }
 
-    <script>
-    // Email format validation
-    function isValidEmail(email) {
-      const pattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-      return pattern.test(email);
+  function showLogin() {
+    document.getElementById('form-title').textContent = 'Login to your Account';
+    document.getElementById('login-form').style.display = 'block';
+    document.getElementById('signup-form').style.display = 'none';
+    document.getElementById('switch-form').innerHTML =
+      'Not Registered Yet? <a href="#" onclick="showSignup()">Create an account</a>';
+  }
+
+  function isValidEmail(email) {
+    const pattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    return pattern.test(email);
+  }
+
+  function validateLogin(e) {
+    const emailInput = document.getElementById('login-email');
+    const passwordInput = document.getElementById('login-password');
+
+    if (!isValidEmail(emailInput.value)) {
+      alert('Please enter a valid email address.');
+      emailInput.focus();
+      e.preventDefault();
+      return false;
     }
 
-    // On form submit, validate email format
-    document.querySelector('form').addEventListener('submit', function (e) {
-      const emailInput = document.getElementById('email');
-      const passwordInput = document.getElementById('password');
+    if (passwordInput.value.length < 6) {
+      alert('Password should be at least 6 characters long.');
+      passwordInput.focus();
+      e.preventDefault();
+      return false;
+    }
 
-      if (!isValidEmail(emailInput.value)) {
-        alert('Please enter a valid email address.');
-        emailInput.focus();
-        e.preventDefault();
-        return;
-      }
+    return true;
+  }
 
-      if (passwordInput.value.length < 6) {
-        alert('Password should be at least 6 characters long.');
-        passwordInput.focus();
-        e.preventDefault();
-        return;
-      }
-    });
+  function validateSignup(e) {
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
 
-    // Toggle password visibility
-    const passwordField = document.getElementById('password');
-    const toggle = document.createElement('span');
-    toggle.textContent = '👁️';
-    toggle.style.cursor = 'pointer';
-    toggle.style.marginLeft = '10px';
+    if (!isValidEmail(email)) {
+      alert('Please enter a valid email address.');
+      e.preventDefault();
+      return false;
+    }
 
-    passwordField.parentNode.appendChild(toggle);
+    if (password.length < 6) {
+      alert('Password should be at least 6 characters long.');
+      e.preventDefault();
+      return false;
+    }
 
-    toggle.addEventListener('click', () => {
-      const type = passwordField.type === 'password' ? 'text' : 'password';
-      passwordField.type = type;
-      toggle.textContent = type === 'password' ? '👁️' : '🙈';
-    });
-  </script>
+    if (password !== confirmPassword) {
+      alert('Passwords do not match!');
+      e.preventDefault();
+      return false;
+    }
+
+    return true;
+  }
+</script>
+
 </body>
 </html>
