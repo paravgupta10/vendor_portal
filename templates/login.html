@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>HomePage</title>
-  <link rel="stylesheet" href="static/css/styles.css" />
+  <link rel="stylesheet" href="static/css/styles1.css" />
 </head>
 <body>
   <h3>VENDOR REGISTRATION PORTAL</h3>
@@ -21,7 +21,7 @@
       <form id="login-form" method="POST" action="/login" onsubmit="return validateLogin(event)">
         <div class="form-group">
           <label for="login-email" style="text-align:left;" class="required-label">Email</label>
-          <input type="email" id="login-email" name="email" placeholder="mail@gmail.com" required />
+          <input type="email" id="login-email" name="email" placeholder="example@mail.com" required />
         </div>
 
         <div class="form-group">
@@ -30,7 +30,7 @@
         </div>
 
         <div class="forgot">
-          <a href="#" style="color: #030404;">Forgot Password?</a>
+          <a href="{{ url_for('forgot_password') }}" style="color: #030404;">Forgot Password?</a>
         </div>
         <br>
 
@@ -45,10 +45,10 @@
       </form>
 
       <!-- Signup Form -->
-      <form id="signup-form" method="POST" action="/register_user" style="display: none;" onsubmit="return validateSignup(event)">
+      <form id="signup-form" method="POST" action="/register" style="display: none;" onsubmit="return validateSignup(event)">
         <div class="form-group">
           <label for="signup-email" style="text-align:left;">Email</label>
-          <input type="email" id="signup-email" name="email" placeholder="mail@gmail.com" required />
+          <input type="email" id="signup-email" name="email" placeholder="example@mail.com" required />
         </div>
         <div class="form-group">
           <label for="signup-password" style="text-align:left;">New Password</label>

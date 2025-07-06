@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Review Vendors</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #b3d9aa;
+      padding: 20px;
+    }
+
+    .dashboard-container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #2f4f2f;
+      margin-bottom: 30px;
+    }
+
+    .filter-buttons {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .filter-buttons button {
+      margin: 0 10px 10px 0;
+      padding: 10px 20px;
+      background-color: #425a3f;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      font-weight: bold;
+    }
+
+    .filter-buttons button:hover {
+      background-color: #2f502a;
+    }
+
+    .dataTables_wrapper .dataTables_filter input,
+    .dataTables_wrapper .dataTables_length select {
+      border-radius: 6px;
+      padding: 6px;
+      border: 1px solid #ccc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #425a3f;
+      color: white;
+    }
+
+    tr:hover td {
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+
+    .vendor-details {
+      margin-top: 40px;
+      display: none;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .vendor-details h3 {
+      color: #2f4f2f;
+      margin-bottom: 20px;
+    }
+
+    .vendor-actions button {
+      margin-right: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-approve { background-color: #4CAF50; }
+    .btn-hold { background-color: #f0ad4e; }
+    .btn-reject { background-color: #d9534f; }
+
+    .btn-approve:hover { background-color: #45a049; }
+    .btn-hold:hover { background-color: #ec971f; }
+    .btn-reject:hover { background-color: #c9302c; }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <h2>Review Vendors</h2>
+
+    <div class="filter-buttons">
+      <button onclick="filterVendors('all')">All (<span id="count-all">0</span>)</button>
+      <button onclick="filterVendors('approved')">Approved (<span id="count-approved">0</span>)</button>
+      <button onclick="filterVendors('pending')">Pending (<span id="count-pending">0</span>)</button>
+      <button onclick="filterVendors('on_hold')">On Hold (<span id="count-on_hold">0</span>)</button>
+      <button onclick="filterVendors('rejected')">Rejected (<span id="count-rejected">0</span>)</button>
+    </div>
+
+    <table id="vendorTable">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in vendors %}
+        <tr data-id="{{ v.id }}" data-status="{{ v.status }}">
+          <td>{{ v.company_name }}</td>
+          <td>{{ v.email }}</td>
+          <td>{{ v.phone }}</td>
+          <td>{{ v.status }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="vendor-details" id="vendorDetails">
+      <h3>Vendor Details</h3>
+      <p><strong>Company:</strong> <span id="detail-company"></span></p>
+      <p><strong>Email:</strong> <span id="detail-email"></span></p>
+      <p><strong>Phone:</strong> <span id="detail-phone"></span></p>
+      <p><strong>Status:</strong> <span id="detail-status"></span></p>
+
+      <div id="soleSection" style="display:none;">
+        <h4>Sole Proprietor</h4>
+        <p><strong>Name:</strong> <span id="detail-owner-name"></span></p>
+        <p><strong>Email:</strong> <span id="detail-owner-email"></span></p>
+        <p><strong>Phone:</strong> <span id="detail-owner-phone"></span></p>
+        <p><strong>PAN:</strong> <span id="detail-owner-pan"></span></p>
+      </div>
+      <div id="partnerSection" style="display:none;">
+        <h4>Partners</h4>
+        <ul id="partnerList"></ul>
+      </div>
+      <div id="directorSection" style="display:none;">
+        <h4>Directors</h4>
+        <ul id="directorList"></ul>
+      </div>
+
+      <div class="vendor-actions">
+        <button class="btn-approve" onclick="updateStatus('approved')">Approve</button>
+        <button class="btn-hold" onclick="updateStatus('on_hold')">Hold</button>
+        <button class="btn-reject" onclick="updateStatus('rejected')">Reject</button>
+      </div>
+    </div>
+    <a href="{{ url_for('admin_dashboard') }}">⬅ Back to Dashboard</a>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('#vendorTable').DataTable();
+      updateCounts();
+    });
+
+    function filterVendors(status) {
+      $('#vendorTable tbody tr').each(function () {
+        const rowStatus = $(this).data('status');
+        if (status === 'all' || rowStatus === status) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    }
+
+    $('#vendorTable').on('click', 'tr', function () {
+      const vendorId = $(this).data('id');
+
+      $.ajax({
+        url: `/admin/vendor-details/${vendorId}`,
+        method: 'GET',
+        success: function(data) {
+          $('#detail-company').text(data.company_name);
+          $('#detail-email').text(data.email);
+          $('#detail-phone').text(data.phone);
+          $('#detail-status').text(data.status);
+
+          $('#soleSection, #partnerSection, #directorSection').hide();
+
+          if (data.ownership_type === 'Sole') {
+            $('#detail-owner-name').text(data.owner_name);
+            $('#detail-owner-email').text(data.owner_email);
+            $('#detail-owner-phone').text(data.owner_phone);
+            $('#detail-owner-pan').text(data.owner_pan);
+            $('#soleSection').show();
+          } else if (data.ownership_type === 'Partnership') {
+            const list = $('#partnerList').empty();
+            data.partners.forEach(p => {
+              list.append(`<li>${p.name} (${p.email}) - ${p.phone}</li>`);
+            });
+            $('#partnerSection').show();
+          } else if (data.ownership_type === 'Private Limited' || data.ownership_type === 'Public Limited') {
+            const list = $('#directorList').empty();
+            const directors = data.directors || data.public_directors;
+            directors.forEach(d => {
+              list.append(`<li>${d.name} (${d.email}) - ${d.phone}</li>`);
+            });
+            $('#directorSection').show();
+          }
+
+          $('#vendorDetails').show();
+        },
+        error: function() {
+          alert("Failed to load vendor details.");
+        }
+      });
+    });
+
+    function updateStatus(newStatus) {
+      const row = $('#vendorTable tbody tr:visible').filter(function () {
+        return $(this).find('td:nth-child(1)').text() === $('#detail-company').text();
+      });
+
+      const vendorId = row.data('id');
+
+      $.ajax({
+        url: '/admin/update-vendor-status',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ id: vendorId, status: newStatus }),
+        success: function (response) {
+          alert(response.message);
+          row.find('td:nth-child(4)').text(newStatus);
+          row.attr('data-status', newStatus);
+          $('#detail-status').text(newStatus);
+          updateCounts();
+        },
+        error: function (xhr) {
+          alert("Error updating status: " + xhr.responseJSON.message);
+        }
+      });
+    }
+
+    function updateCounts() {
+      const counts = { all: 0, approved: 0, pending: 0, on_hold: 0, rejected: 0 };
+      $('#vendorTable tbody tr').each(function () {
+        const status = $(this).data('status');
+        counts[status] = (counts[status] || 0) + 1;
+        counts['all']++;
+      });
+      for (const key in counts) {
+        $('#count-' + key).text(counts[key]);
+      }
+    }
+  </script>
+</body>
+</html>

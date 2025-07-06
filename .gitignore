@@ -1,3 +1,4 @@
 .env
 admin.py
 __pycache__/
+info.txt

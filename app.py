@@ -1,12 +1,14 @@
-import os
+import os, random
 from dotenv import load_dotenv
-from flask import Flask, request, render_template, redirect, url_for, flash, session, abort
+from flask import Flask, request, render_template, redirect, url_for, flash, session, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from supabase import create_client, Client
 from functools import wraps
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer
 
 load_dotenv()
 
@@ -115,6 +117,19 @@ def role_required(required_role):
         return wrapped
     return decorator
 
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")  # your email
+app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")  # app password
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_USERNAME")
+
+mail = Mail(app)
+s = URLSafeTimedSerializer(app.secret_key)  # for generating tokens
+
+#ROUTES
+
 @app.route('/')
 def home():
     return redirect(url_for('login'))
@@ -146,8 +161,8 @@ def login():
             flash("Invalid credentials.")
     return render_template("login.html")
 
-@app.route("/register_user", methods=["POST"])
-def register_user():
+@app.route("/register", methods=["POST"])
+def register():
     email = request.form.get("email")
     password = request.form.get("password")
     confirm_password = request.form.get("confirm_password")
@@ -155,18 +170,69 @@ def register_user():
     if password != confirm_password:
         flash("Passwords do not match.")
         return redirect(url_for('login'))
+    
+    if len(password) < 6:
+        flash("Password must be at least 6 characters long.")
+        return redirect(url_for('login'))
+
 
     if User.query.filter_by(email=email).first():
         flash("Email already registered.")
         return redirect(url_for('login'))
 
-    password_hash = generate_password_hash(password)
-    new_user = User(email=email, password_hash=password_hash, role='vendor')
-    db.session.add(new_user)
-    db.session.commit()
+    code = str(random.randint(100000, 999999))
+    session['email_verification'] = {
+        'email': email,
+        'password': password,
+        'code': code
+    }
 
-    flash("Registration successful! Please log in.")
-    return redirect(url_for('login'))
+    msg = Message("Your Verification Code", recipients=[email], sender="your_email@gmail.com")
+    msg.body = f"Your verification code is {code}"
+    mail.send(msg)
+
+    return redirect(url_for('verify_code'))
+
+@app.route("/verify_code", methods=["GET", "POST"])
+def verify_code():
+    if request.method == "POST":
+        entered_code = request.form.get("code")
+        data = session.get('email_verification')
+
+        if data and entered_code == data['code']:
+            email = data['email']
+            password_hash = generate_password_hash(data['password'])
+            new_user = User(email=email, password_hash=password_hash, role='vendor')
+            db.session.add(new_user)
+            db.session.commit()
+            session.pop('email_verification', None)
+            flash("Registration successful!")
+            return redirect(url_for('login'))
+        else:
+            flash("Invalid verification code.")
+            return redirect(url_for('verify_code'))
+
+    return render_template("verify_code.html")
+
+@app.route('/resend_code', methods=['POST'])
+def resend_code():
+    session_data = session.get('email_verification')
+    if not session_data:
+        flash("No verification session found. Please register again.")
+        return redirect(url_for('login'))
+
+    code = str(random.randint(100000, 999999))
+    session_data['code'] = code
+    session['email_verification'] = session_data
+
+    msg = Message("Your New Verification Code", recipients=[session_data['email']], sender="your_email@gmail.com")
+    msg.body = f"Your new verification code is {code}"
+    mail.send(msg)
+
+    flash("A new verification code has been sent to your email.")
+    return redirect(url_for('verify_code'))
+
+
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
@@ -337,6 +403,149 @@ def view_registrations():
 
     vendors = VendorDetails.query.all()
     return render_template("view_registrations.html", vendors=vendors)
+
+@app.route('/admin/review-vendors')
+def review_vendors():
+    if session.get("email") != "admin1@example.com":
+        return redirect(url_for('login'))
+    
+    vendors = VendorDetails.query.all()  # assuming your signup table model is called Signup
+    return render_template('review_vendors.html', vendors=vendors)
+
+@app.route('/admin/update-vendor-status', methods=['POST'])
+def update_vendor_status():
+    if session.get("email") != "admin1@example.com":
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 403
+
+    data = request.get_json()
+    vendor_id = data.get('id')
+    new_status = data.get('status')
+
+    vendor = VendorDetails.query.get(vendor_id)
+    if not vendor:
+        return jsonify({'success': False, 'message': 'Vendor not found'}), 404
+
+    vendor.status = new_status
+    db.session.commit()
+
+    return jsonify({'success': True, 'message': f'Status updated to {new_status}'})
+
+@app.route('/admin/vendor-details/<int:vendor_id>')
+@login_required
+def get_vendor_details(vendor_id):
+    if session.get("email") != "admin1@example.com":
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    vendor = VendorDetails.query.get_or_404(vendor_id)
+
+    details = {
+        "company_name": vendor.company_name,
+        "email": vendor.email,
+        "phone": vendor.phone,
+        "status": vendor.status,
+        "ownership_type": vendor.ownership_type,
+        "registered_address": vendor.registered_address,
+        "branch_addresses": vendor.branch_addresses,
+        "tan_number": vendor.tan_number,
+        "gst_number": vendor.gst_number,
+        "product_services": vendor.product_services,
+    }
+
+    ownership = vendor.ownership_type.lower()
+
+    if ownership == 'sole':
+        sole_owner = SoleOwner.query.filter_by(vendor_id=vendor.id).first()
+        if sole_owner:
+            details['sole_owner'] = {
+                "name": sole_owner.name,
+                "email": sole_owner.email,
+                "phone": sole_owner.phone,
+                "pan_number": sole_owner.pan_number
+            }
+
+    elif ownership == 'partnership':
+        partners = Partner.query.filter_by(vendor_id=vendor.id).all()
+        if partners:
+            details['partners'] = [{
+                "name": p.name,
+                "email": p.email,
+                "phone": p.phone,
+                "pan_number": p.pan_number
+            } for p in partners]
+
+    elif ownership == 'private limited':
+        directors = PvtLtdDirector.query.filter_by(vendor_id=vendor.id).all()
+        if directors:
+            details['directors'] = [{
+                "name": d.name,
+                "email": d.email,
+                "phone": d.phone,
+                "pan_number": d.pan_number
+            } for d in directors]
+
+    elif ownership == 'public limited':
+        directors = PublicLtdDirector.query.filter_by(vendor_id=vendor.id).all()
+        if directors:
+            details['directors'] = [{
+                "name": d.name,
+                "email": d.email,
+                "phone": d.phone,
+                "pan_number": d.pan_number
+            } for d in directors]
+
+    return jsonify(details)
+
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+        user = User.query.filter_by(email=email).first()
+        if user:
+            token = s.dumps(email, salt='password-reset')
+            reset_url = url_for('reset_password', token=token, _external=True)
+
+            msg = Message("Password Reset Request", recipients=[email])
+            msg.body = f"Click the link to reset your password: {reset_url}"
+            mail.send(msg)
+
+            flash("Reset link sent to your email.", "info")
+            return redirect(url_for("login"))
+        else:
+            flash("Email not found.", "danger")
+    return render_template("forgot_password.html")
+
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    try:
+        email = s.loads(token, salt="password-reset", max_age=3600)  # 1 hour expiry
+    except Exception:
+        flash("The reset link is invalid or expired.", "danger")
+        return redirect(url_for("forgot_password"))
+
+    if request.method == "POST":
+        new_password = request.form.get("new_password")
+        confirm_password = request.form.get("confirm_password")
+
+        if len(new_password) < 6:
+            flash("Password must be at least 6 characters long.")
+            return render_template("reset_password.html")
+        
+        if new_password != confirm_password:
+            flash("Passwords do not match.", "danger")
+            return render_template("reset_password.html")
+
+        user = User.query.filter_by(email=email).first()
+        if user:
+            user.password_hash = generate_password_hash(new_password)
+            db.session.commit()
+            flash("Password reset successful. Please log in.", "success")
+            return redirect(url_for("login"))
+        else:
+            flash("User not found.", "danger")
+
+    return render_template("reset_password.html")
+
 
 if __name__ == "__main__":
     with app.app_context():

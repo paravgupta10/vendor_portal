@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Admin Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="static/css/stylesd.css" />
+  <link rel="stylesheet" href="static/css/dashboard.css" />
 </head>
 <body>
   <a href="/logout" class="fixed-top">Logout</a>
@@ -22,7 +22,7 @@
     </div>
 
     <div class="buttons">
-      <a href="#">Review Vendors</a>
+      <a href="{{ url_for('review_vendors') }}"">Review Vendors</a>
       <a href="{{ url_for('view_registrations') }}">View All Registrations</a>
       <a href="#">Send Announcement</a>
     </div>

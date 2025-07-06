@@ -4,92 +4,10 @@
   <meta charset="UTF-8">
   <title>Vendor Registrations</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #b3d9aa;
-      background-size: cover;
-      padding: 20px;
-    }
-
-    .dashboard-container {
-      max-width: 1200px;
-      margin: auto;
-      padding: 30px;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-
-    h2 {
-      font-size: 30px;
-      color: #425a3f; /* Green */
-      margin-bottom: 20px;
-    }
-
-    .table-wrapper {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      min-width: 1200px;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background-color: #fff;
-      border-radius: 8px;
-    }
-
-    th, td {
-      padding: 12px 16px;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-      white-space: nowrap;
-    }
-
-    th {
-      background-color: #425a3f; /* Green */
-      color: white;
-    }
-
-    td {
-      background-color: #f9f9f9;
-    }
-
-    tr:hover td {
-      background-color: #f1f1f1;
-    }
-
-    a.button {
-      display: inline-block;
-      margin-top: 30px;
-      padding: 12px 24px;
-      background-color: #425a3f;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-      transition: background-color 0.3s ease;
-    }
-
-    a.button:hover {
-      background-color: #2f502a;
-    }
-
-
-    @media (max-width: 768px) {
-      table {
-        min-width: unset;
-        font-size: 14px;
-      }
-
-      th, td {
-        padding: 10px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/view_reg.css') }}">
+  <!--https://datatables.net/-->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.1/css/buttons.dataTables.min.css">
 </head>
 <body>
 
@@ -98,7 +16,7 @@
 
     {% if vendors %}
       <div class="table-wrapper">
-        <table>
+        <table id="vendorTable">
           <thead>
             <tr>
               <th>Company</th>
@@ -108,10 +26,14 @@
               <th>Website</th>
               <th>Turnover</th>
               <th>Registered Address</th>
+              <th>City</th>
+              <th>State</th>
+              <th>Country</th>
               <th>Branch Addresses</th>
               <th>GST</th>
               <th>TAN</th>
               <th>Product/Services</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
@@ -124,10 +46,22 @@
               <td>{{ v.website }}</td>
               <td>{{ v.turnover }}</td>
               <td>{{ v.registered_address }}</td>
+              <td>{{ v.city }}</td>
+              <td>{{ v.state }}</td>
+              <td>{{ v.country }}</td>
               <td>{{ v.branch_addresses }}</td>
               <td>{{ v.gst_number }}</td>
               <td>{{ v.tan_number }}</td>
               <td>{{ v.product_services }}</td>
+              <td>
+                <span class="status-badge 
+                  {% if v.status.lower() == 'approved' %}status-approved
+                  {% elif v.status.lower() in ['pending', 'on hold'] %}status-pending
+                  {% elif v.status.lower() == 'rejected' %}status-rejected
+                  {% else %}status-on-hold{% endif %}">
+                  {{ v.status }}
+                </span>
+              </td>
             </tr>
             {% endfor %}
           </tbody>
@@ -139,5 +73,49 @@
 
     <a class="button" href="{{ url_for('admin_dashboard') }}">⬅ Back to Dashboard</a>
   </div>
+    <!-- jQuery and DataTables JS -->
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+  <!-- DataTables core -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+  <!-- Buttons extension -->
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.1/js/buttons.html5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <!-- Init DataTable -->
+  <script>
+  $(document).ready(function () {
+    $('#vendorTable').DataTable({
+      dom: 'Bfrtip',
+      buttons: [
+        {
+          extend: 'copyHtml5',
+          text: '📋 Copy',
+          className: 'btn-copy'
+        },
+        {
+          extend: 'excelHtml5',
+          text: '📊 Excel',
+          className: 'btn-excel'
+        },
+        {
+          extend: 'csvHtml5',
+          text: '🧾 CSV',
+          className: 'btn-csv'
+        }
+      ],
+      pageLength: 10,
+      lengthMenu: [5, 10, 20, 50, 100],
+      order: [],
+      language: {
+        search: "🔍 Filter:"
+      }
+    });
+  });
+</script>
+
 </body>
 </html>

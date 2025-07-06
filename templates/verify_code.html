@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Verify Email</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/verify_code.css') }}">
+</head>
+<body>
+  <div class="auth-container">
+    <h2>Email Verification</h2>
+    <p>Please enter the 6-digit code sent to your email.</p>
+
+    <!-- Verification Form -->
+    <form method="POST" action="{{ url_for('verify_code') }}">
+      <input type="text" id="code" name="code" placeholder="Enter verification code" required />
+      <button type="submit">Verify</button>
+    </form>
+
+    <!-- Resend Code Form -->
+    <form method="POST" action="{{ url_for('resend_code') }}" id="resendForm">
+      <button type="submit" class="resend-button" id="resendBtn">Resend Code</button>
+    </form>
+
+    <p id="countdownMsg"></p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="error-messages">
+          <ul>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <script>
+    const resendBtn = document.getElementById('resendBtn');
+    const countdownMsg = document.getElementById('countdownMsg');
+    const cooldownSeconds = 30;
+
+    function startCooldown(secondsLeft) {
+      resendBtn.disabled = true;
+      let timeLeft = secondsLeft;
+
+      resendBtn.textContent = `Resend Code (${timeLeft}s)`;
+      countdownMsg.textContent = "Please wait before trying again.";
+
+      const interval = setInterval(() => {
+        timeLeft--;
+        resendBtn.textContent = `Resend Code (${timeLeft}s)`;
+
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          resendBtn.disabled = false;
+          resendBtn.textContent = "Resend Code";
+          countdownMsg.textContent = "";
+          localStorage.removeItem('resendCooldown');
+        }
+      }, 1000);
+    }
+
+    // Handle form submit
+    document.getElementById('resendForm').addEventListener('submit', function () {
+      const expiresAt = Date.now() + cooldownSeconds * 1000;
+      localStorage.setItem('resendCooldown', expiresAt.toString());
+      startCooldown(cooldownSeconds);
+    });
+
+    // On page load: resume cooldown if applicable
+    const savedCooldown = localStorage.getItem('resendCooldown');
+    if (savedCooldown) {
+      const secondsLeft = Math.ceil((parseInt(savedCooldown) - Date.now()) / 1000);
+      if (secondsLeft > 0) {
+        startCooldown(secondsLeft);
+      } else {
+        localStorage.removeItem('resendCooldown');
+      }
+    }
+  </script>
+</body>
+</html>
