@@ -1,7 +1,7 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #b3d9aa;
+    background-color: #b8e6ae;
     background-size: cover;
     padding: 20px;
 }
@@ -117,21 +117,26 @@ a.button:hover {
 }
 
 .status-approved {
-  background-color: #d4edda;
-  color: #0d4319;
+  background-color: #c2e9cb;
+  color: #10551f;
   border: 1px solid #c3e6cb;
 }
 
-.status-pending,
+.status-pending{
+  background-color: #85cae7;
+  color: #256dd9;
+  border: 1px solid #8bedf3;
+}
+
 .status-on-hold {
-  background-color: #fff3cd;
-  color: #828206;
+  background-color: #f7e6ab;
+  color: #acac08;
   border: 1px solid #ffeeba;
 }
 
 .status-rejected {
   background-color: #f8d7da;
-  color: #670610;
+  color: #930917;
   border: 1px solid #f5c6cb;
 }
 

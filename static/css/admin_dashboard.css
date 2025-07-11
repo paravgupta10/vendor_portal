@@ -1,0 +1,140 @@
+:root {
+    --button-bg: #425a3f;
+    --button-hover: #2f502a;
+    --light-bg: #fff;
+    --text-dark: #333;
+    --text-muted: #555;
+    --radius: 12px;
+    --card-shadow: rgba(0, 0, 0, 0.15);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #b8e6ae;
+    color: var(--text-dark);
+    display: flex;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 220px;
+    background-color: #194513;
+    padding-top: 20px;
+    color: white;
+}
+
+.sidebar h3 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 12px 26px;
+    color: white;
+    text-decoration: none;
+    margin: 15px 0;
+    border: 1px solid #ffffff4d; 
+    border-radius: 8px; 
+    transition: background 0.2s ease-in-out, border 0.2s ease-in-out;
+}
+
+
+.sidebar a:hover {
+    background-color: var(--button-hover);
+}
+.sidebar .logo {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 10px;
+}
+
+.sidebar .logo img {
+    max-width: 180px;
+    height: auto;
+}
+
+.main-content {
+    margin-left: 220px;
+    padding: 30px;
+    width: 100%;
+}
+
+.top-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.card-box {
+    flex: 1;
+    min-width: 180px;
+    background-color: var(--light-bg);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 6px var(--card-shadow);
+    text-align: center;
+}
+
+.card-box h5 {
+    margin-bottom: 8px;
+    color: var(--text-muted);
+}
+
+.card-box h3 {
+    font-size: 24px;
+    color: var(--text-dark);
+}
+
+.logout {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 1000;
+}
+
+.logout:hover {
+    background-color: #ffeaea;
+    color: #dc3545;
+}
+
+.main-panel {
+    background-color: var(--light-bg);
+    padding: 30px;
+    margin-top: 60px;
+    text-align: center;
+    border-radius: var(--radius);
+    box-shadow: 0 2px 6px var(--card-shadow);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+    display: none;
+    }
+
+    .main-content {
+    margin-left: 0;
+    padding: 20px;
+    }
+
+    .card-box h3 {
+    font-size: 20px;
+    }
+}

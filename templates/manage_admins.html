@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Manage Admins</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --button-bg: #425a3f;
+      --button-hover: #2f502a;
+      --light-bg: #fff;
+      --text-dark: #333;
+      --text-muted: #555;
+      --radius: 12px;
+      --card-shadow: rgba(0, 0, 0, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #b8e6ae;
+      color: var(--text-dark);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .main-panel {
+      background-color: var(--light-bg);
+      padding: 30px;
+      border-radius: var(--radius);
+      box-shadow: 0 2px 6px var(--card-shadow);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .main-panel h2 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      color: var(--text-dark);
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .form-group input[type="email"],
+    .form-group input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      color: var(--text-dark);
+    }
+
+    .form-group input[type="email"]:focus,
+    .form-group input[type="password"]:focus {
+      outline: none;
+      border-color: var(--button-bg);
+      box-shadow: 0 0 5px rgba(66, 90, 63, 0.3);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      font-size: 1rem;
+      color: var(--text-dark);
+      cursor: pointer;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      margin-right: 8px;
+      accent-color: var(--button-bg);
+    }
+
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background-color: var(--button-bg);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: var(--button-hover);
+    }
+
+    @media (max-width: 768px) {
+      .main-panel {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-panel">
+    <h2>Create New Admin</h2>
+    <form action="{{ url_for('create_admin') }}" method="POST">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required placeholder="Enter admin email" />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required placeholder="Enter password" />
+      </div>
+      <div class="form-group">
+        <label>Permissions</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="permissions" value="view_vendors" /> View Vendors</label>
+          <label><input type="checkbox" name="permissions" value="review_vendors" /> Review Vendors</label>
+          <label><input type="checkbox" name="permissions" value="supabase" /> Supabase</label>
+          <label><input type="checkbox" name="permissions" value="invoices" /> Invoices</label>
+        </div>
+      </div>
+      <button type="submit" class="submit-btn">Create Admin</button>
+    </form>
+  </div>
+</body>
+</html>

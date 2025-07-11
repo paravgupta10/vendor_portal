@@ -1,6 +1,6 @@
 import os, random
 from dotenv import load_dotenv
-from flask import Flask, request, render_template, redirect, url_for, flash, session, abort, jsonify
+from flask import Flask, request, render_template, redirect, url_for, flash, session, abort, jsonify, render_template_string
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,6 +9,9 @@ from supabase import create_client, Client
 from functools import wraps
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
+from sqlalchemy.sql import text
+import re
+
 
 load_dotenv()
 
@@ -52,7 +55,7 @@ class VendorDetails(db.Model):
     city = db.Column(db.String(30))
     state = db.Column(db.String(30))
     country = db.Column(db.String(30))
-    status = db.Column(db.String(20), default='Pending')  
+    status = db.Column(db.String(20), default='pending')  
 
 class BranchOffice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -98,6 +101,16 @@ class PublicLtdDirector(db.Model):
     phone = db.Column(db.String(20))
     pan_number = db.Column(db.String(20))
 
+class Invoice(db.Model):
+    __tablename__ = 'invoices'
+    id = db.Column(db.Integer, primary_key=True)
+    vendor_id = db.Column(db.Integer, db.ForeignKey('vendor_details.id'))
+    file_name = db.Column(db.String(200))
+    file_url = db.Column(db.String(300))
+    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
+    uploaded_at = db.Column(db.DateTime, server_default=db.func.now())
+
+
 # Decorators
 def login_required(f):
     @wraps(f)
@@ -129,7 +142,6 @@ mail = Mail(app)
 s = URLSafeTimedSerializer(app.secret_key)  # for generating tokens
 
 #ROUTES
-
 @app.route('/')
 def home():
     return redirect(url_for('login'))
@@ -161,25 +173,42 @@ def login():
             flash("Invalid credentials.")
     return render_template("login.html")
 
+
 @app.route("/register", methods=["POST"])
 def register():
     email = request.form.get("email")
     password = request.form.get("password")
     confirm_password = request.form.get("confirm_password")
 
+    # Check if passwords match
     if password != confirm_password:
         flash("Passwords do not match.")
         return redirect(url_for('login'))
-    
-    if len(password) < 6:
-        flash("Password must be at least 6 characters long.")
+
+    # Check password length
+    if len(password) < 8:
+        flash("Password must be at least 8 characters long.")
         return redirect(url_for('login'))
 
+    # Check password strength: one uppercase, one digit, one special character
+    if not re.search(r"[A-Z]", password):
+        flash("Password must contain at least one uppercase letter.")
+        return redirect(url_for('login'))
 
+    if not re.search(r"[0-9]", password):
+        flash("Password must contain at least one number.")
+        return redirect(url_for('login'))
+
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
+        flash("Password must contain at least one special character.")
+        return redirect(url_for('login'))
+
+    # Check if email already exists
     if User.query.filter_by(email=email).first():
         flash("Email already registered.")
         return redirect(url_for('login'))
 
+    # Store temporarily for verification
     code = str(random.randint(100000, 999999))
     session['email_verification'] = {
         'email': email,
@@ -187,11 +216,13 @@ def register():
         'code': code
     }
 
+    # Send verification code via email
     msg = Message("Your Verification Code", recipients=[email], sender="your_email@gmail.com")
     msg.body = f"Your verification code is {code}"
     mail.send(msg)
 
     return redirect(url_for('verify_code'))
+
 
 @app.route("/verify_code", methods=["GET", "POST"])
 def verify_code():
@@ -251,13 +282,13 @@ def signup():
         vendor = VendorDetails(
             user_id=user_id,
             company_name=request.form.get('company_name'),
-            ownership_type=request.form.get('ownership'),
+            ownership_type=request.form.get('ownership').lower(),
             registered_address=request.form.get('address'),
             branch_addresses="\n\n".join(request.form.getlist('baddress[]')),
             city=request.form.get('city'),
             state=request.form.get('state'),
             country=request.form.get('country'),
-            status="Pending",
+            status="pending",
             email=email,
             phone=request.form.get('phone'),
             website=request.form.get('website'),
@@ -291,7 +322,6 @@ def signup():
                     email=request.form.get(f'partner{i}_email'),
                     phone=request.form.get(f'partner{i}_phone'),
                     pan_number=request.form.get(f'partner{i}_pan'),
-                    ownership_type=ownership
                 ))
                 i += 1
         elif ownership == "pvtltd":
@@ -383,7 +413,7 @@ def vendor_dashboard():
     if not vendor:
         flash("Vendor details not found.")
         return redirect(url_for('logout'))
-    return render_template("vendor_dashboard.html", company=vendor.company_name)
+    return render_template("vendor_dashboard.html", company=vendor.company_name, vendor=vendor)
 
 @app.route("/admin-dashboard")
 @login_required
@@ -391,8 +421,20 @@ def admin_dashboard():
     if session.get('email') != "admin1@example.com":
         flash("Unauthorized access.")
         return redirect(url_for('vendor_dashboard'))
+    total_vendors = VendorDetails.query.count()
+    approved_count = VendorDetails.query.filter_by(status='approved').count()
+    pending_count = VendorDetails.query.filter_by(status='pending').count()
+    hold_count = VendorDetails.query.filter_by(status='hold').count()
+    rejected_count = VendorDetails.query.filter_by(status='rejected').count()
 
-    return render_template("admin_dashboard.html")
+    return render_template(
+        'admin_dashboard.html',
+        total_vendors=total_vendors,
+        approved_count=approved_count,
+        pending_count=pending_count,
+        hold_count=hold_count,
+        rejected_count=rejected_count
+    )
 
 @app.route("/admin/view-registrations")
 @login_required
@@ -405,14 +447,34 @@ def view_registrations():
     return render_template("view_registrations.html", vendors=vendors)
 
 @app.route('/admin/review-vendors')
+@login_required
 def review_vendors():
     if session.get("email") != "admin1@example.com":
-        return redirect(url_for('login'))
-    
-    vendors = VendorDetails.query.all()  # assuming your signup table model is called Signup
-    return render_template('review_vendors.html', vendors=vendors)
+        flash("Unauthorized access.")
+        return redirect(url_for('vendor_dashboard'))
+
+    vendors = VendorDetails.query.with_entities(
+        VendorDetails.id,
+        VendorDetails.company_name,
+        VendorDetails.email,
+        VendorDetails.phone,
+        VendorDetails.status
+    ).all()
+
+    # Count vendors by status
+    counts = {
+    'all': len(vendors),
+    'approved': VendorDetails.query.filter_by(status='approved').count(),
+    'pending': VendorDetails.query.filter_by(status='pending').count(),
+    'hold': VendorDetails.query.filter_by(status='hold').count(),
+    'rejected': VendorDetails.query.filter_by(status='rejected').count()
+}
+
+    return render_template('review_vendors.html', vendors=vendors, counts=counts)
+
 
 @app.route('/admin/update-vendor-status', methods=['POST'])
+@login_required
 def update_vendor_status():
     if session.get("email") != "admin1@example.com":
         return jsonify({'success': False, 'message': 'Unauthorized'}), 403
@@ -425,75 +487,96 @@ def update_vendor_status():
     if not vendor:
         return jsonify({'success': False, 'message': 'Vendor not found'}), 404
 
-    vendor.status = new_status
+    vendor.status = new_status.lower()
     db.session.commit()
 
+    # Send email notification
+    try:
+        msg = Message(
+            subject="Vendor Registration Status Update",
+            sender=app.config['MAIL_USERNAME'],
+            recipients=[vendor.email]
+        )
+        msg.body = f"""Dear {vendor.company_name},
+
+Your vendor registration status has been updated to: {new_status.title()}.
+
+Please login to the vendor portal to check further details.
+
+Regards,
+Vendor Portal Admin Team
+"""
+        mail.send(msg)
+    except Exception as e:
+        print("Email failed:", str(e))
+
     return jsonify({'success': True, 'message': f'Status updated to {new_status}'})
+
 
 @app.route('/admin/vendor-details/<int:vendor_id>')
 @login_required
 def get_vendor_details(vendor_id):
-    if session.get("email") != "admin1@example.com":
-        return jsonify({'error': 'Unauthorized'}), 403
+    sql = text("SELECT * FROM vendor_full_info WHERE id = :id")
+    result = db.session.execute(sql, {'id': vendor_id}).mappings().fetchone()
 
-    vendor = VendorDetails.query.get_or_404(vendor_id)
+    if not result:
+        return jsonify({'error': 'Vendor not found'}), 404
 
-    details = {
-        "company_name": vendor.company_name,
-        "email": vendor.email,
-        "phone": vendor.phone,
-        "status": vendor.status,
-        "ownership_type": vendor.ownership_type,
-        "registered_address": vendor.registered_address,
-        "branch_addresses": vendor.branch_addresses,
-        "tan_number": vendor.tan_number,
-        "gst_number": vendor.gst_number,
-        "product_services": vendor.product_services,
+    data = dict(result)
+    ownership = data.get("ownership_type", "").lower()
+
+    response = {
+        "company_name": data["company_name"],
+        "email": data["email"],
+        "phone": data["phone"],
+        "status": data["status"],
+        "ownership_type": data.get("ownership_type", ""),
+        "tan_number": data.get("tan_number", ""),
+        "gst_number": data.get("gst_number", ""),
+        "product_services": data.get("product_services", ""),
+        "registered_address": data.get("registered_address", ""),
+        "branch_addresses": data.get("branch_addresses", ""),
     }
 
-    ownership = vendor.ownership_type.lower()
+    # Sole Owner
+    if ownership == "sole":
+        response.update({
+            "owner_name": data.get("sole_owner_name", ""),
+            "owner_email": data.get("sole_owner_email", ""),
+            "owner_phone": data.get("sole_owner_phone", ""),
+            "owner_pan": data.get("sole_owner_pan", "")
+        })
 
-    if ownership == 'sole':
-        sole_owner = SoleOwner.query.filter_by(vendor_id=vendor.id).first()
-        if sole_owner:
-            details['sole_owner'] = {
-                "name": sole_owner.name,
-                "email": sole_owner.email,
-                "phone": sole_owner.phone,
-                "pan_number": sole_owner.pan_number
-            }
+    # Partnership or LLP — multiple partners
+    elif ownership in ["partnership", "llp"]:
+        partners = db.session.execute(
+            text("SELECT name, email, phone FROM partners WHERE vendor_id = :id"),
+            {"id": vendor_id}
+        ).mappings().all()
 
-    elif ownership == 'partnership':
-        partners = Partner.query.filter_by(vendor_id=vendor.id).all()
-        if partners:
-            details['partners'] = [{
-                "name": p.name,
-                "email": p.email,
-                "phone": p.phone,
-                "pan_number": p.pan_number
-            } for p in partners]
+        response["partners"] = [dict(p) for p in partners]
 
-    elif ownership == 'private limited':
-        directors = PvtLtdDirector.query.filter_by(vendor_id=vendor.id).all()
-        if directors:
-            details['directors'] = [{
-                "name": d.name,
-                "email": d.email,
-                "phone": d.phone,
-                "pan_number": d.pan_number
-            } for d in directors]
+    # Pvt/Public Ltd — multiple directors
+    elif ownership in ["pvtltd", "publicltd"]:
+        directors = []
 
-    elif ownership == 'public limited':
-        directors = PublicLtdDirector.query.filter_by(vendor_id=vendor.id).all()
-        if directors:
-            details['directors'] = [{
-                "name": d.name,
-                "email": d.email,
-                "phone": d.phone,
-                "pan_number": d.pan_number
-            } for d in directors]
+        if ownership == "pvtltd":
+            rows = db.session.execute(
+                text("SELECT name, email, phone FROM pvtltd_directors WHERE vendor_id = :id"),
+                {"id": vendor_id}
+            ).mappings().all()
+            directors = [dict(d) for d in rows]
+        elif ownership == "publicltd":
+            rows = db.session.execute(
+                text("SELECT name, email, phone FROM publicltd_directors WHERE vendor_id = :id"),
+                {"id": vendor_id}
+            ).mappings().all()
+            directors = [dict(d) for d in rows]
 
-    return jsonify(details)
+        response["directors"] = directors
+
+    return jsonify(response)
+
 
 
 @app.route("/forgot-password", methods=["GET", "POST"])
@@ -509,45 +592,128 @@ def forgot_password():
             msg.body = f"Click the link to reset your password: {reset_url}"
             mail.send(msg)
 
-            flash("Reset link sent to your email.", "info")
-            return redirect(url_for("login"))
+            # Use alert with redirect
+            return render_template("forgot_password.html", alert="Reset link sent to your email!", redirect_to=url_for("login"))
         else:
-            flash("Email not found.", "danger")
+            return render_template("forgot_password.html", alert="Email not found.")
     return render_template("forgot_password.html")
+
+
 
 @app.route("/reset-password/<token>", methods=["GET", "POST"])
 def reset_password(token):
     try:
-        email = s.loads(token, salt="password-reset", max_age=3600)  # 1 hour expiry
+        email = s.loads(token, salt="password-reset", max_age=3600)
     except Exception:
-        flash("The reset link is invalid or expired.", "danger")
-        return redirect(url_for("forgot_password"))
+        return render_template("reset_password.html", alert="The reset link is invalid or expired.")
 
     if request.method == "POST":
         new_password = request.form.get("new_password")
         confirm_password = request.form.get("confirm_password")
 
-        if len(new_password) < 6:
-            flash("Password must be at least 6 characters long.")
-            return render_template("reset_password.html")
-        
+        if len(new_password) < 8 or not any(c.isdigit() for c in new_password) or not any(c.isupper() for c in new_password):
+            return render_template("reset_password.html", alert="Password must be at least 8 characters long and contain at least one digit and one uppercase letter.")
+
         if new_password != confirm_password:
-            flash("Passwords do not match.", "danger")
-            return render_template("reset_password.html")
+            return render_template("reset_password.html", alert="Passwords do not match.")
 
         user = User.query.filter_by(email=email).first()
         if user:
             user.password_hash = generate_password_hash(new_password)
             db.session.commit()
-            flash("Password reset successful. Please log in.", "success")
-            return redirect(url_for("login"))
+            return render_template("reset_password.html", alert="Password reset successful!", redirect_to=url_for("login"))
         else:
-            flash("User not found.", "danger")
+            return render_template("reset_password.html", alert="User not found.")
 
     return render_template("reset_password.html")
 
 
+
+@app.route('/upload-invoice', methods=['POST'])
+@login_required
+def upload_invoice():
+    vendor = VendorDetails.query.filter_by(user_id=session['user_id']).first()
+    if not vendor or vendor.status != 'approved':
+        abort(403)
+
+    file = request.files.get('invoice')
+    if not file:
+        flash("No file selected.")
+        return redirect(url_for('vendor_dashboard'))
+
+    if file.filename.endswith(('.pdf', '.jpeg', '.jpg')) and len(file.read()) <= 2 * 1024 * 1024:
+        file.seek(0)  # Reset pointer after size check
+        from uuid import uuid4
+        filename = f"{uuid4()}_{secure_filename(file.filename)}"
+        path = f"{vendor.id}/invoices/{filename}"
+
+        # Upload to Supabase Storage
+        supabase.storage.from_("vendor-invoices").upload(
+            path=path,
+            file=file.read(),
+            file_options={"cache-control": "3600", "upsert": "false"}
+        )
+        public_url = f"{SUPABASE_URL}/storage/v1/object/public/vendor-invoices/{path}"
+
+        # Insert into invoices table
+        invoice = Invoice(
+            vendor_id=vendor.id,
+            file_name=filename,
+            file_url=public_url,
+            status='pending'
+        )
+        db.session.add(invoice)
+        db.session.commit()
+
+        flash("Invoice uploaded successfully.")
+    else:
+        flash("Invalid file type or size exceeds 2MB.")
+
+    return redirect(url_for('vendor_dashboard'))
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
+
+        # Create vendor_full_info view once at startup
+        view_sql = """
+        create or replace view vendor_full_info as
+        select
+            vd.id,
+            vd.company_name,
+            vd.email,
+            vd.phone,
+            vd.status,
+            vd.ownership_type,
+            vd.registered_address,
+            vd.branch_addresses,
+            vd.tan_number,
+            vd.gst_number,
+            vd.product_services,
+            so.name as sole_owner_name,
+            so.email as sole_owner_email,
+            so.phone as sole_owner_phone,
+            so.pan_number as sole_owner_pan,
+            p.name as partner_name,
+            p.email as partner_email,
+            p.phone as partner_phone,
+            p.pan_number as partner_pan,
+            pvt.name as pvt_director_name,
+            pvt.email as pvt_director_email,
+            pvt.phone as pvt_director_phone,
+            pvt.pan_number as pvt_director_pan,
+            pub.name as pub_director_name,
+            pub.email as pub_director_email,
+            pub.phone as pub_director_phone,
+            pub.pan_number as pub_director_pan
+        from vendor_details vd
+        left join sole_owners so on vd.id = so.vendor_id and lower(vd.ownership_type) = 'sole'
+        left join partners p on vd.id = p.vendor_id and lower(vd.ownership_type) in ('partnership', 'llp')
+        left join pvtltd_directors pvt on vd.id = pvt.vendor_id and lower(vd.ownership_type) = 'pvtltd'
+        left join publicltd_directors pub on vd.id = pub.vendor_id and lower(vd.ownership_type) = 'publicltd';
+        """
+        db.session.execute(text(view_sql))
+        db.session.commit()
+
     app.run(debug=True)
+

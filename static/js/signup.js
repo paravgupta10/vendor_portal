@@ -1,12 +1,10 @@
-// signup.js
-
 function showOwnershipFields() {
   const groups = document.querySelectorAll('.ownership-group');
   groups.forEach(group => {
     group.hidden = true;
-    group.querySelectorAll('input').forEach(input => {
-      input.disabled = true;
-      input.value = '';
+    group.querySelectorAll('input, textarea, select').forEach(el => {
+      el.disabled = true;
+      el.value = '';
     });
   });
 
@@ -15,25 +13,43 @@ function showOwnershipFields() {
     const activeGroup = document.getElementById(`${ownership}-fields`);
     if (activeGroup) {
       activeGroup.hidden = false;
-      activeGroup.querySelectorAll('input').forEach(input => {
-        input.disabled = false;
+      activeGroup.querySelectorAll('input, textarea, select').forEach(el => {
+        el.disabled = false;
       });
     }
   }
 }
 
-document.addEventListener('DOMContentLoaded', showOwnershipFields);
+document.addEventListener('DOMContentLoaded', () => {
+  showOwnershipFields(); // already called
 
+  // Initialize counts from DOM
+  partnerCount = document.querySelectorAll('#partner-container .partner-block').length + 1;
+  LLPCount = document.querySelectorAll('#llp-container .partner-block').length + 1;
+  pvtDirectorCount = document.querySelectorAll('#pvtltd-container .director-block').length + 1;
+  directorCount = document.querySelectorAll('#publicltd-container .director-block').length + 1;
+
+});
 document.getElementById('ownership').addEventListener('change', showOwnershipFields);
+
+function isLastSectionFilled(containerSelector, inputSelector = 'input, textarea') {
+  const groups = document.querySelectorAll(containerSelector);
+  if (!groups.length) return true;
+  const lastGroup = groups[groups.length - 1];
+  return Array.from(lastGroup.querySelectorAll(inputSelector)).every(el => el.value.trim() !== '');
+}
 
 let branchAddressCount = 1;
 function addBranchAddress() {
+  if (!isLastSectionFilled('#branch-addresses .branch-group')) {
+    alert("Please fill the last branch address fields before adding a new one.");
+    return;
+  }
   branchAddressCount++;
   const container = document.getElementById('branch-addresses');
 
   const groupWrapper = document.createElement('div');
   groupWrapper.className = 'branch-group';
-
   groupWrapper.innerHTML = `
     <div class="input-group">
       <label for="baddress_${branchAddressCount}">Address of Branch Office ${branchAddressCount}</label>
@@ -52,79 +68,50 @@ function addBranchAddress() {
       <input type="text" id="bcountry_${branchAddressCount}" name="bcountry[]" maxlength="30" placeholder="Enter your branch country"/>
     </div>
   `;
-
   container.appendChild(groupWrapper);
 }
 
-let partnerCount = 2;
-function addPartner() {
-  partnerCount++;
-  const container = document.getElementById('partnership-fields');
+function addEntity(containerId, countVarName, label, namePrefix) {
+  if (!isLastSectionFilled(`#${containerId} .input-group`)) {
+    alert(`Please complete the last ${label.toLowerCase()} details before adding a new one.`);
+    return;
+  }
+
+  const container = document.getElementById(containerId);
   if (!container) return;
 
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = `
-    <h4>Partner ${partnerCount} Details</h4>
-    <div class="input-group"><label>Name</label><input type="text" name="partner${partnerCount}_name" maxlength="100"></div>
-    <div class="input-group"><label>Email</label><input type="email" name="partner${partnerCount}_email" maxlength="100"></div>
-    <div class="input-group"><label>Phone</label><input type="tel" name="partner${partnerCount}_phone" maxlength="10" pattern="\\d{10}" title="Please enter exactly 10 digits"></div>
-    <div class="input-group"><label>PAN Number</label><input type="text" name="partner${partnerCount}_pan" maxlength="10"></div>
-  `;
-  container.appendChild(wrapper);
-}
+  // Ensure counter is initialized
+  window[countVarName] = window[countVarName] || 1;
 
-let LLPCount = 2;
-function addLLP() {
-  LLPCount++;
-  const container = document.getElementById('llp-fields');
-  if (!container) return;
+  const count = window[countVarName]; // Use current count for labeling
 
   const wrapper = document.createElement('div');
+  wrapper.classList.add(containerId.includes("director") ? 'director-block' : 'partner-block');
   wrapper.innerHTML = `
-    <h4>Partner ${LLPCount} Details</h4>
-    <div class="input-group"><label>Name</label><input type="text" name="partner${LLPCount}_name" maxlength="100"></div>
-    <div class="input-group"><label>Email</label><input type="email" name="partner${LLPCount}_email" maxlength="100"></div>
-    <div class="input-group"><label>Phone</label><input type="tel" name="partner${LLPCount}_phone" maxlength="10" pattern="\\d{10}" title="Please enter exactly 10 digits"></div>
-    <div class="input-group"><label>PAN Number</label><input type="text" name="partner${LLPCount}_pan" maxlength="10"></div>
+    <h4>${label} ${count} Details</h4>
+    <div class="input-group"><label>Name</label><input type="text" name="${namePrefix}${count}_name" maxlength="100"></div>
+    <div class="input-group"><label>Email</label><input type="email" name="${namePrefix}${count}_email" maxlength="100"></div>
+    <div class="input-group"><label>Phone</label><input type="tel" name="${namePrefix}${count}_phone" maxlength="10" pattern="\\d{10}" title="Please enter exactly 10 digits"></div>
+    <div class="input-group"><label>PAN Number</label><input type="text" name="${namePrefix}${count}_pan" maxlength="10"></div>
   `;
   container.appendChild(wrapper);
+
+  window[countVarName]++; // Increment after using
 }
 
-let pvtDirectorCount = 2;
-function addPvtDirector() {
-  pvtDirectorCount++;
-  const container = document.getElementById('pvtltd-fields');
-  if (!container) return;
 
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = `
-    <h4>Director ${pvtDirectorCount} Details</h4>
-    <div class="input-group"><label>Name</label><input type="text" name="director${pvtDirectorCount}_name" maxlength="100"></div>
-    <div class="input-group"><label>Email</label><input type="email" name="director${pvtDirectorCount}_email" maxlength="100"></div>
-    <div class="input-group"><label>Phone</label><input type="tel" name="director${pvtDirectorCount}_phone" maxlength="10" pattern="\\d{10}" title="Please enter exactly 10 digits"></div>
-    <div class="input-group"><label>PAN Number</label><input type="text" name="director${pvtDirectorCount}_pan" maxlength="10"></div>
-  `;
-  container.appendChild(wrapper);
-}
 
-let directorCount = 3;
-function addPubDirector() {
-  directorCount++;
-  const container =document.getElementById('publicltd-fields');
-  if (!container) return;
-
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = `
-    <h4>Director ${directorCount} Details</h4>
-    <div class="input-group"><label>Name</label><input type="text" name="director${directorCount}_name" maxlength="100"></div>
-    <div class="input-group"><label>Email</label><input type="email" name="director${directorCount}_email" maxlength="100"></div>
-    <div class="input-group"><label>Phone</label><input type="tel" name="director${directorCount}_phone" maxlength="10" pattern="\\d{10}" title="Please enter exactly 10 digits"></div>
-    <div class="input-group"><label>PAN Number</label><input type="text" name="director${directorCount}_pan" maxlength="10"></div>
-  `;
-  container.appendChild(wrapper);
-}
+function addPartner()       { addEntity('partner-container', 'partnerCount', 'Partner', 'partner'); }
+function addLLP()           { addEntity('llp-container', 'LLPCount', 'Partner', 'partner'); }
+function addPvtDirector()   { addEntity('pvtltd-container', 'pvtDirectorCount', 'Director', 'director'); }
+function addPubDirector()   { addEntity('publicltd-container', 'directorCount', 'Director', 'dir'); }
 
 function addProductField() {
+  if (!isLastSectionFilled('#product-services-container .input-group')) {
+    alert("Please complete the last product/service field before adding a new one.");
+    return;
+  }
+
   const container = document.getElementById('product-services-container');
   const count = container.querySelectorAll('input').length + 1;
 
@@ -160,6 +147,8 @@ function validateFormat(id, pattern, message) {
 
 function validateFileInput(id, errorId) {
   const fileInput = document.getElementById(id);
+  const errorMsg = document.getElementById(errorId);
+
   if (!fileInput.files.length) {
     alert(`Please upload a file for ${id}.`);
     fileInput.focus();
@@ -168,7 +157,6 @@ function validateFileInput(id, errorId) {
 
   const file = fileInput.files[0];
   const validTypes = ['application/pdf', 'image/jpeg'];
-  const errorMsg = document.getElementById(errorId);
 
   if (!validTypes.includes(file.type)) {
     alert(`Invalid file type for ${id}. Please upload PDF or JPEG.`);
@@ -197,9 +185,10 @@ const fileValidations = [
 ];
 
 fileValidations.forEach(({ id, errorId }) => {
-  document.getElementById(id).addEventListener("change", function () {
-    validateFileInput(id, errorId);
-  });
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener("change", () => validateFileInput(id, errorId));
+  }
 });
 
 document.querySelector('form').addEventListener('submit', function (e) {
@@ -213,7 +202,6 @@ document.querySelector('form').addEventListener('submit', function (e) {
   const isValidTAN = validateFormat('tan_number', '^[A-Z]{4}[0-9]{5}[A-Z]$', 'Invalid TAN format');
   const isValidGST = validateFormat('gst_number', '^\\d{2}[A-Z]{5}\\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$', 'Invalid GST format');
   const isValidPhone = validateFormat('phone', '^[6-9][0-9]{9}$', 'Invalid phone number format');
-
   const areFilesValid = fileValidations.every(({ id, errorId }) => validateFileInput(id, errorId));
 
   if (!(isValidTAN && isValidGST && isValidPhone && areFilesValid)) {

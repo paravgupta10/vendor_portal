@@ -1,27 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Vendor Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="static/css/dashboard.css">
+  <meta charset="UTF-8">
+  <title>Vendor Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/vendor_dashboard.css') }}">
+  <style>
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #28a745;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 5px;
+      font-size: 14px;
+      z-index: 9999;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+      transition: opacity 0.5s ease-in-out;
+    }
+    .toast.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+  </style>
 </head>
 <body>
+  <a href="/logout" class="fixed-top">Logout</a>
 
-    <div class="dashboard-container">
-        <h2>Welcome, {{ company }}!</h2>
+  <div class="dashboard-container">
+    <h2>Welcome, {{ company }}!</h2>
 
-        <div class="info">
-            <p><strong>Registration Status:</strong> pending</p>
-            <p><strong>Email:</strong> {{ session.get('email', 'Not shown here') }}</p>
-        </div>
-
-        <div class="buttons">
-            <a href="#">Update Profile</a>
-            <a href="#">Upload Documents</a>
-            <a href="/logout">Logout</a>
-        </div>
+    <div class="info">
+      <p><strong>Email:</strong> {{ session.get('email', 'Not shown here') }}</p>
+      <p><strong>Registration Status:</strong> {{ vendor.status|capitalize }}</p>
     </div>
+  </div>
+
+  {% if vendor %}
+  <div class="details-section">
+    <h3>Your Registration Details</h3>
+    <div class="details-grid">
+      <p><strong>Company Name:</strong> {{ vendor.company_name }}</p>
+      <p><strong>Type of Business:</strong> {{ vendor.ownership_type }}</p>
+      <p><strong>Address:</strong> {{ vendor.registered_address }}</p>
+      <p><strong>TAN Number:</strong> {{ vendor.tan_number }}</p>
+      <p><strong>City:</strong> {{ vendor.city }}</p>
+      <p><strong>GST Number:</strong> {{ vendor.gst_number }}</p>
+      <p><strong>State:</strong> {{ vendor.state }}</p>
+      <p><strong>Phone:</strong> {{ vendor.phone }}</p>
+      <p><strong>Country:</strong> {{ vendor.country }}</p>
+    </div>
+  </div>
+
+  {% if vendor.status == 'approved' %}
+  <div class="upload-section" style="margin: 40px auto; max-width: 800px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center;">
+    <h3>Upload Invoice</h3>
+    <form action="{{ url_for('upload_invoice') }}" method="POST" enctype="multipart/form-data">
+      <input 
+        type="file" 
+        name="invoice" 
+        accept=".pdf, .jpeg, .jpg" 
+        required
+        style="margin-top: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; display: inline-block;">
+      <br><br>
+      <button type="submit" style="background-color: #425a3f; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
+        Upload Invoice
+      </button>
+    </form>
+  </div>
+  {% else %}
+  <div class="upload-section" style="margin: 40px auto; max-width: 800px; background: #fff3f3; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center; color: #b94a48;">
+    <h3>Invoice Upload Unavailable</h3>
+    <p>You can upload invoices only after your registration has been <strong>approved</strong>.</p>
+  </div>
+  {% endif %}
+  {% endif %}
+
+  <!-- Toast Notification -->
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden">Invoice uploaded successfully.</div>
+
+  {% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+      {% if "Invoice uploaded successfully" in message %}
+        <script>
+          window.addEventListener('DOMContentLoaded', () => {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('hidden');
+            toast.classList.add('show');
+            setTimeout(() => {
+              toast.classList.remove('show');
+              toast.classList.add('hidden');
+            }, 3000);
+          });
+        </script>
+      {% endif %}
+    {% endfor %}
+  {% endwith %}
 
 </body>
 </html>

@@ -4,28 +4,53 @@
   <meta charset="UTF-8" />
   <title>Admin Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="static/css/dashboard.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
 </head>
 <body>
-  <a href="/logout" class="fixed-top">Logout</a>
-  <div class="dashboard-container">
-    <h2>Welcome, Admin!</h2>
 
-    <div class="info">
-      <p><strong>Tasks you can perform:</strong></p>
-      <ul>
-        <li>Review and approve vendor registrations</li>
-        <li>Manage vendor data and profiles</li>
-        <li>Send announcements to vendors</li>
-        <li>Monitor system activity</li>
-      </ul>
+  <a href="/logout" class="logout">Logout</a>
+
+  <div class="sidebar">
+    <h3>Admin Panel</h3>
+    <div class="logo">
+      <img src="static/images/login2.jpeg" alt="Vendor Portal Logo" />
+    </div>
+    {#<a href="{{ url_for('manage_admins') }}">Manage Admins</a> #}
+    <a href="{{ url_for('view_registrations') }}">View Vendors</a>
+    <a href="{{ url_for('review_vendors') }}">Review Vendors</a>
+    <a href="https://supabase.com/dashboard/project/ryfwobovbxrkypiqoscm" target="_blank">Supabase</a>
+    {#<a href="{{ url_for('invoices') }}">Invoices</a>#}
+  </div>
+
+  <div class="main-content">
+    <div class="main-panel">
+      <h4>Welcome,  {{ session['email'] }}!</h4>
+    </div>
+    <div class="top-bar">
+      <div class="card-box">
+        <h5>Total Vendors</h5>
+        <h3>{{ total_vendors }}</h3>
+      </div>
+      <div class="card-box">
+        <h5>Approved</h5>
+        <h3>{{ approved_count }}</h3>
+      </div>
+      <div class="card-box">
+        <h5>Pending</h5>
+        <h3>{{ pending_count }}</h3>
+      </div>
+      <div class="card-box">
+        <h5>On Hold</h5>
+        <h3>{{ hold_count }}</h3>
+      </div>
+      <div class="card-box">
+        <h5>Rejected</h5>
+        <h3>{{ rejected_count }}</h3>
+      </div>
     </div>
 
-    <div class="buttons">
-      <a href="{{ url_for('review_vendors') }}"">Review Vendors</a>
-      <a href="{{ url_for('view_registrations') }}">View All Registrations</a>
-      <a href="#">Send Announcement</a>
-    </div>
+    
+
   </div>
 
 </body>
