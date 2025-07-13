@@ -7,3 +7,4 @@ python-dotenv
 flask-mail
 itsdangerous
 gunicorn
+psycopg2-binary
