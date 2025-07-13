@@ -63,6 +63,14 @@ table {
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
+.table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.table-wrapper table {
+  min-width: 1000px; /* Ensures table doesn’t shrink too much */
+}
 
 th, td {
   padding: 14px 16px;
@@ -234,5 +242,85 @@ a:hover {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-container {
+    padding: 16px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th,
+  td {
+    padding: 8px;
+  }
+
+  .filter-buttons button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .vendor-card {
+    padding: 20px;
+  }
+
+  .status-badge {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .vendor-actions button {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  a {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 360px) {
+  h2 {
+    font-size: 20px;
+  }
+
+  .dashboard-container {
+    padding: 12px;
+  }
+
+  .filter-buttons button {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .status-badge {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .vendor-actions button {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+
+  a {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  th,
+  td {
+    font-size: 11.5px;
+    padding: 6px;
   }
 }

@@ -154,6 +154,27 @@ li {
   color: #222;
 }
 
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #28a745;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 5px;
+  font-size: 14px;
+  z-index: 9999;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+  transition: opacity 0.5s ease-in-out;
+}
+.toast.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.toast.show {
+  opacity: 1;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 600px) {
   .details-grid {
@@ -175,6 +196,54 @@ li {
 
   .fixed-top {
     padding: 8px 14px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 20px;
+    margin-top: 80px;
+  }
+
+  h2 {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .info p {
+    font-size: 14px;
+  }
+
+  ul {
+    padding-left: 18px;
+    font-size: 14px;
+  }
+
+  li {
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .buttons a {
+    padding: 8px 16px;
+    font-size: 13.5px;
+  }
+
+  .fixed-top {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+
+  .details-section {
+    padding: 20px;
+  }
+
+  .details-section h3 {
+    font-size: 18px;
+  }
+
+  .details-grid p {
     font-size: 14px;
   }
 }

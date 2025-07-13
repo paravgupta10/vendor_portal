@@ -1,0 +1,9 @@
+flask
+flask-sqlalchemy
+sqlalchemy
+werkzeug
+supabase
+python-dotenv
+flask-mail
+itsdangerous
+gunicorn

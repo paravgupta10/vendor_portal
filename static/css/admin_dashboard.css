@@ -1,6 +1,6 @@
 :root {
-  --button-bg: #c4a96f;        
-  --button-hover: #b49158;     
+  --button-bg: #c4a96f;
+  --button-hover: #b49158;
   --light-bg: #ffffff;
   --text-dark: #222;
   --text-muted: #666;
@@ -35,7 +35,8 @@ body {
   padding-top: 20px;
   color: white;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-  z-index: 100;
+  z-index: 1000;
+  transition: transform 0.3s ease;
 }
 
 .sidebar h3 {
@@ -147,21 +148,44 @@ body {
   color: #dc3545;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-  .top-bar {
-    flex-direction: column;
-  }
+/* Toggle Button */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1100;
+  background-color: #396f32;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  font-size: 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
+/* Responsive Behavior */
 @media (max-width: 768px) {
   .sidebar {
     display: none;
   }
 
+  .sidebar.active {
+    display: block;
+  }
+
+  .sidebar-toggle {
+    display: block;
+  }
+
   .main-content {
     margin-left: 0;
-    padding: 20px;
+    padding: 80px 20px 20px 20px;
+  }
+
+  .top-bar {
+    flex-direction: column;
   }
 
   .logout {
@@ -180,3 +204,28 @@ body {
     font-size: 0.95rem;
   }
 }
+
+@media (max-width: 480px) {
+  .card-box {
+    padding: 14px;
+    font-size: 0.85rem;
+  }
+
+  .main-panel {
+    font-size: 0.85rem;
+    padding: 16px;
+  }
+
+  .logout {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .main-content {
+    padding: 15px;
+  }
+}
+.sidebar-content {
+  padding-top: 70px;
+}
+

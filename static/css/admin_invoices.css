@@ -179,3 +179,77 @@ tr:hover td {
     font-size: 14px;
   }
 }
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+
+  h2 {
+    font-size: 24px;
+  }
+
+  table {
+    font-size: 13px;
+  }
+
+  th,
+  td {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .btn-approve,
+  .btn-reject {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  #back-link-wrapper {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .dataTables_wrapper .dataTables_filter input,
+  .dataTables_wrapper .dataTables_length select {
+    font-size: 13px;
+    padding: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-container {
+    padding: 14px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th,
+  td {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .btn-approve,
+  .btn-reject {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  #back-link-wrapper {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+
+  .status-badge {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+}

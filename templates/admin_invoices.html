@@ -37,8 +37,8 @@
             <td>{{ invoice.uploaded_at }}</td>
             <td>
               {% if invoice.status.lower() not in ['approved', 'rejected'] %}
-                <button class="btn-approve" onclick="updateStatus({{ invoice.id }}, 'Approved')">Approve</button>
-                <button class="btn-reject" onclick="updateStatus({{ invoice.id }}, 'Rejected')">Reject</button>
+                <button class="btn-approve" onclick="updateStatus('{{ invoice.id }}', 'Approved')">Approve</button>
+                <button class="btn-reject" onclick="updateStatus('{{ invoice.id }}', 'Rejected')">Reject</button>
               {% else %}
                 <span class="locked-status">Finalized</span>
               {% endif %}

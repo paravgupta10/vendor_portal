@@ -13,7 +13,6 @@ from sqlalchemy import text
 from sqlalchemy.sql import text
 import re
 
-
 load_dotenv()
 
 app = Flask(__name__)

@@ -3,43 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>HomePage</title>
+  <title>Vendor Registration Portal</title>
   <link rel="stylesheet" href="static/css/styles1.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h3>VENDOR REGISTRATION PORTAL</h3>
   <div class="container">
     <div class="left-section">
-      <p style="font-size: 19px; color:black;">Simplifying Vendor Onboarding, Powering Business Growth!</p>
     </div>
 
     <div class="right-section">
-      <img src="static/images/login2.jpeg" alt="Skeleton Illustration" />
+      <img src="static/images/login1.jpeg" alt="Vendor Management" />
       <h4 id="form-title">Login to your Account</h4>
 
       <!-- Login Form -->
       <form id="login-form" method="POST" action="/login" onsubmit="return validateLogin(event)">
         <div class="form-group">
-          <label for="login-email" style="text-align:left;" class="required-label">Email</label>
+          <label for="login-email" class="required-label">Email</label>
           <input type="email" id="login-email" name="email" placeholder="example@mail.com" required />
         </div>
 
         <div class="form-group">
-          <label for="login-password" style="text-align:left;" class="required-label">Password</label>
+          <label for="login-password" class="required-label">Password</label>
           <input type="password" id="login-password" name="password" placeholder="••••••••" required />
         </div>
 
         <div class="forgot">
-          <a href="{{ url_for('forgot_password') }}" style="color: #030404;">Forgot Password?</a>
+          <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
         </div>
-        <br>
 
         <button type="submit">Login</button>
 
         <!-- Error Message (Flask Injected) -->
         <div class="error-message">
           {% if error %}
-            <p style="color: red;">{{ error }}</p>
+            <p>{{ error }}</p>
           {% endif %}
         </div>
       </form>
@@ -47,15 +46,15 @@
       <!-- Signup Form -->
       <form id="signup-form" method="POST" action="/register" style="display: none;" onsubmit="return validateSignup(event)">
         <div class="form-group">
-          <label for="signup-email" style="text-align:left;" class="required-label">Email</label>
+          <label for="signup-email" class="required-label">Email</label>
           <input type="email" id="signup-email" name="email" placeholder="example@mail.com" required />
         </div>
         <div class="form-group">
-          <label for="signup-password" style="text-align:left;" class="required-label">New Password</label>
+          <label for="signup-password" class="required-label">New Password</label>
           <input type="password" id="signup-password" name="password" placeholder="••••••••" required />
         </div>
         <div class="form-group">
-          <label for="confirm-password" style="text-align:left;" class="required-label">Confirm Password</label>
+          <label for="confirm-password" class="required-label">Confirm Password</label>
           <input type="password" id="confirm-password" name="confirm_password" placeholder="••••••••" required />
         </div>
         <button type="submit">Sign Up</button>
@@ -63,7 +62,7 @@
 
       <!-- Switch between forms -->
       <div class="switch-form" id="switch-form">
-        Not Registered Yet? <a href="#" onclick="showSignup()" style="text-decoration: underline;">Create an account</a>
+        Not Registered Yet? <a href="#" onclick="showSignup()">Create an account</a>
       </div>
     </div>
   </div>
@@ -74,7 +73,7 @@
     document.getElementById('login-form').style.display = 'none';
     document.getElementById('signup-form').style.display = 'block';
     document.getElementById('switch-form').innerHTML =
-      'Already have an account? <a href="#" onclick="showLogin()" style="text-decoration: underline;">Login</a>';
+      'Already have an account? <a href="#" onclick="showLogin()">Login</a>';
   }
 
   function showLogin() {
@@ -82,7 +81,7 @@
     document.getElementById('login-form').style.display = 'block';
     document.getElementById('signup-form').style.display = 'none';
     document.getElementById('switch-form').innerHTML =
-      'Not Registered Yet? <a href="#" onclick="showSignup()" style="text-decoration: underline;">Create an account</a>';
+      'Not Registered Yet? <a href="#" onclick="showSignup()">Create an account</a>';
   }
 
   function isValidEmail(email) {
@@ -142,7 +141,15 @@
     return true;
   }
 </script>
-
+<div class="footer-brand">
+  <span>Parav Gupta:</span>
+  <a href="https://github.com/paravgupta10" target="_blank" aria-label="GitHub">
+    <i class="fab fa-github"></i>
+  </a>
+  <a href="https://linkedin.com/in/paravgupta10" target="_blank" aria-label="LinkedIn">
+    <i class="fab fa-linkedin"></i>
+  </a>
+</div>
 
 </body>
 </html>

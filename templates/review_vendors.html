@@ -18,7 +18,7 @@
       <button class="btn-onhold" onclick="filterVendors('hold')">On Hold (<span id="count-hold">{{ counts['hold'] }}</span>)</button>
       <button class="btn-rejected" onclick="filterVendors('rejected')">Rejected (<span id="count-rejected">{{ counts['rejected'] }}</span>)</button>
     </div>
-
+    <div class="table-wrapper">
     <table id="vendorTable">
       <thead>
         <tr>
@@ -37,6 +37,7 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
 
     <div class="vendor-details" id="vendorDetails" style="display: none;">
       <div class="vendor-card">
