@@ -1,136 +1,162 @@
 body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #b8e6ae;
-    background-size: cover;
-    padding: 20px;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #b8e6ae, #a2d49c);
+  background-size: cover;
+  padding: 20px;
 }
 
+/* Container */
 .dashboard-container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 30px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    text-align: center;
+  max-width: 1200px;
+  margin: auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  text-align: center;
 }
 
+/* Title */
 h2 {
-    font-size: 30px;
-    color: #425a3f; 
-    margin-bottom: 20px;
+  font-size: 32px;
+  color: #2f4f2f;
+  margin-bottom: 25px;
+  font-weight: 600;
 }
 
+/* Table Wrapper */
 .table-wrapper {
-    overflow-x: auto;
+  overflow-x: auto;
 }
+
+/* DataTables Search */
 .dataTables_wrapper .dataTables_filter input {
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    padding: 6px;
-    margin-left: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  margin-left: 10px;
+  outline: none;
 }
 
+/* DataTables Length Dropdown */
 .dataTables_wrapper .dataTables_length select {
-    border-radius: 6px;
-    padding: 4px;
-    margin: 0 10px;
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin: 0 10px;
+  outline: none;
 }
 
+/* Table */
 table {
-    width: 100%;
-    min-width: 1200px;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background-color: #fff;
-    border-radius: 8px;
+  width: 100%;
+  min-width: 1200px;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* Table Cells */
 th, td {
-    padding: 12px 16px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-    white-space: nowrap;
+  padding: 14px 18px;
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
+  white-space: nowrap;
+  font-size: 15px;
 }
 
+/* Table Header */
 th {
-    background-color: #425a3f; /* Green */
-    color: white;
+  background-color: #31442f;
+  color: #ffffff;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
+/* Table Body */
 td {
-    background-color: #f9f9f9;
+  background-color: #fafafa;
 }
 
+/* Hover Row Effect */
 tr:hover td {
-    background-color: #f1f1f1;
+  background-color: #f0f0f0;
+  cursor: pointer;
 }
 
+/* Button-style Link */
 a.button {
-    display: inline-block;
-    margin-top: 30px;
-    padding: 12px 24px;
-    background-color: #425a3f;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+  display: inline-block;
+  margin-top: 30px;
+  padding: 12px 26px;
+  background-color: #425a3f;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
 }
 
 a.button:hover {
-    background-color: #2f502a;
+  background-color: #2f502a;
 }
 
+/* Export Buttons */
 .btn-copy, .btn-excel, .btn-csv {
-    background-color: #425a3f;
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    margin-right: 8px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  background-color: #425a3f;
+  color: #ffffff;
+  border: none;
+  padding: 8px 18px;
+  margin-right: 8px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .btn-copy:hover {
-    background-color: #3b4f39;
+  background-color: #3b4f39;
 }
 
 .btn-excel:hover {
-    background-color: #2e6f2e;
+  background-color: #3c873c;
 }
 
 .btn-csv:hover {
-    background-color: #2e4a6f;
+  background-color: #2e4a6f;
 }
 
+/* Status Badges */
 .status-badge {
   display: inline-block;
-  padding: 6px 12px;
-  border-radius: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
   font-size: 14px;
-  font-weight: bold;
+  font-weight: 600;
   text-transform: capitalize;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
+/* Status Colors */
 .status-approved {
   background-color: #c2e9cb;
   color: #10551f;
-  border: 1px solid #c3e6cb;
+  border: 1px solid #9dd9ad;
 }
 
-.status-pending{
-  background-color: #85cae7;
-  color: #256dd9;
+.status-pending {
+  background-color: #b8e6f6;
+  color: #217ca3;
   border: 1px solid #8bedf3;
 }
 
 .status-on-hold {
-  background-color: #f7e6ab;
-  color: #acac08;
+  background-color: #fff3cd;
+  color: #997a00;
   border: 1px solid #ffeeba;
 }
 
@@ -140,14 +166,26 @@ a.button:hover {
   border: 1px solid #f5c6cb;
 }
 
-
+/* Responsive */
 @media (max-width: 768px) {
-    table {
+  table {
     min-width: unset;
     font-size: 14px;
-    }
+  }
 
-    th, td {
+  th, td {
     padding: 10px;
-    }
+  }
+
+  .btn-copy,
+  .btn-excel,
+  .btn-csv {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+
+  a.button {
+    padding: 10px 20px;
+    font-size: 15px;
+  }
 }

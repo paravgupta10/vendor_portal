@@ -45,7 +45,7 @@
     <h3>Your Registration Details</h3>
     <div class="details-grid">
       <p><strong>Company Name:</strong> {{ vendor.company_name }}</p>
-      <p><strong>Type of Business:</strong> {{ vendor.ownership_type }}</p>
+      <p><strong>Type of Business:</strong> <span style="text-transform: uppercase;">{{ vendor.ownership_type }}</span></p>
       <p><strong>Address:</strong> {{ vendor.registered_address }}</p>
       <p><strong>TAN Number:</strong> {{ vendor.tan_number }}</p>
       <p><strong>City:</strong> {{ vendor.city }}</p>
@@ -63,7 +63,7 @@
       <input 
         type="file" 
         name="invoice" 
-        accept=".pdf, .jpeg, .jpg" 
+        accept=".jpeg, .jpg" 
         required
         style="margin-top: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; display: inline-block;">
       <br><br>
@@ -80,7 +80,6 @@
   {% endif %}
   {% endif %}
 
-  <!-- Toast Notification -->
   <!-- Toast Notification -->
   <div id="toast" class="toast hidden">Invoice uploaded successfully.</div>
 

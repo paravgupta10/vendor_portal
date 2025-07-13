@@ -4,37 +4,59 @@
   <meta charset="UTF-8" />
   <title>Verify Email</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/verify_code.css') }}">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #b8e6ae;
+    }
+    .custom-button {
+      background-color: #2f502a;
+    }
+    .custom-button:hover {
+      background-color: #244021;
+    }
+  </style>
 </head>
-<body>
-  <div class="auth-container">
-    <h2>Email Verification</h2>
-    <p>Please enter the 6-digit code sent to your email.</p>
+<body class="flex items-center justify-center min-h-screen">
+  <div class="bg-white p-6 md:p-8 rounded-lg shadow-lg w-full max-w-md text-center">
+    <h2 class="text-xl md:text-2xl font-semibold text-[#2f502a] mb-2">Email Verification</h2>
+    <p class="text-gray-700 text-sm mb-4">Please enter the 6-digit code sent to your email.</p>
 
     <!-- Verification Form -->
-    <form method="POST" action="{{ url_for('verify_code') }}">
-      <input type="text" id="code" name="code" placeholder="Enter verification code" required />
-      <button type="submit">Verify</button>
+    <form method="POST" action="{{ url_for('verify_code') }}" class="flex flex-col gap-4">
+      <input
+        type="text"
+        id="code"
+        name="code"
+        placeholder="Enter verification code"
+        required
+        class="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#2f502a]"
+      />
+      <button type="submit" class="custom-button text-white py-2 rounded transition duration-300">
+        Verify
+      </button>
     </form>
 
-    <!-- Resend Code Form -->
-    <form method="POST" action="{{ url_for('resend_code') }}" id="resendForm">
-      <button type="submit" class="resend-button" id="resendBtn">Resend Code</button>
+    <form method="POST" action="{{ url_for('resend_code') }}" id="resendForm" class="mt-4">
+      <button
+        type="submit"
+        id="resendBtn"
+        class="text-green-700 hover:underline hover:text-green-900 text-sm font-medium bg-transparent border-none p-0 focus:outline-none">
+        Resend Code
+      </button>
     </form>
 
-    <p id="countdownMsg"></p>
+
+    <p id="countdownMsg" class="text-sm text-gray-600 mt-2"></p>
 
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <div class="error-messages">
-          <ul>
-            {% for message in messages %}
-              <li>{{ message }}</li>
-            {% endfor %}
-          </ul>
-        </div>
+        <script>
+          alert("{{ messages[0] }}");
+        </script>
       {% endif %}
     {% endwith %}
+
   </div>
 
   <script>
@@ -63,14 +85,12 @@
       }, 1000);
     }
 
-    // Handle form submit
     document.getElementById('resendForm').addEventListener('submit', function () {
       const expiresAt = Date.now() + cooldownSeconds * 1000;
       localStorage.setItem('resendCooldown', expiresAt.toString());
       startCooldown(cooldownSeconds);
     });
 
-    // On page load: resume cooldown if applicable
     const savedCooldown = localStorage.getItem('resendCooldown');
     if (savedCooldown) {
       const secondsLeft = Math.ceil((parseInt(savedCooldown) - Date.now()) / 1000);

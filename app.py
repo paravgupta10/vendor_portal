@@ -9,6 +9,7 @@ from supabase import create_client, Client
 from functools import wraps
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
+from sqlalchemy import text
 from sqlalchemy.sql import text
 import re
 
@@ -107,7 +108,7 @@ class Invoice(db.Model):
     vendor_id = db.Column(db.Integer, db.ForeignKey('vendor_details.id'))
     file_name = db.Column(db.String(200))
     file_url = db.Column(db.String(300))
-    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
+    status = db.Column(db.String(20), default='pending')  
     uploaded_at = db.Column(db.DateTime, server_default=db.func.now())
 
 
@@ -627,8 +628,6 @@ def reset_password(token):
 
     return render_template("reset_password.html")
 
-
-
 @app.route('/upload-invoice', methods=['POST'])
 @login_required
 def upload_invoice():
@@ -641,26 +640,27 @@ def upload_invoice():
         flash("No file selected.")
         return redirect(url_for('vendor_dashboard'))
 
-    if file.filename.endswith(('.pdf', '.jpeg', '.jpg')) and len(file.read()) <= 2 * 1024 * 1024:
-        file.seek(0)  # Reset pointer after size check
+    file_bytes = file.read()
+
+    # Validate file
+    if file.filename.endswith(('.jpeg', '.jpg')) and len(file_bytes) <= 2 * 1024 * 1024:
         from uuid import uuid4
         filename = f"{uuid4()}_{secure_filename(file.filename)}"
         path = f"{vendor.id}/invoices/{filename}"
 
-        # Upload to Supabase Storage
+        # Upload to Supabase Storage (using correct bucket name: 'vendor-invoices')
         supabase.storage.from_("vendor-invoices").upload(
             path=path,
-            file=file.read(),
-            file_options={"cache-control": "3600", "upsert": "false"}
+            file=file_bytes,
+            file_options={"cache-control": "3600", "upsert": False}
         )
         public_url = f"{SUPABASE_URL}/storage/v1/object/public/vendor-invoices/{path}"
 
-        # Insert into invoices table
         invoice = Invoice(
             vendor_id=vendor.id,
             file_name=filename,
             file_url=public_url,
-            status='pending'
+            status='Pending'
         )
         db.session.add(invoice)
         db.session.commit()
@@ -670,6 +670,54 @@ def upload_invoice():
         flash("Invalid file type or size exceeds 2MB.")
 
     return redirect(url_for('vendor_dashboard'))
+
+
+@app.route('/admin/invoices')
+@login_required
+def admin_invoices():
+    if session.get('email') != 'admin1@example.com':
+        abort(403)
+
+    invoices = db.session.execute(text("""
+        SELECT invoices.*, vendor_details.company_name
+        FROM invoices
+        JOIN vendor_details ON invoices.vendor_id = vendor_details.id
+        ORDER BY invoices.uploaded_at DESC
+    """)).fetchall()
+
+    return render_template('admin_invoices.html', invoices=invoices)
+
+@app.route('/admin/invoice/status/<int:invoice_id>', methods=['POST'])
+@login_required
+def update_invoice_status(invoice_id):
+    if session.get('email') != 'admin1@example.com':
+        abort(403)
+
+    new_status = request.json.get('status')
+    if not new_status:
+        return jsonify({'success': False, 'message': 'No status provided'}), 400
+
+    # Fetch current status
+    current_status_result = db.session.execute(
+        text("SELECT status FROM invoices WHERE id = :id"),
+        {'id': invoice_id}
+    ).fetchone()
+
+    if not current_status_result:
+        return jsonify({'success': False, 'message': 'Invoice not found'}), 404
+
+    current_status = current_status_result.status.lower()
+    if current_status in ['approved', 'rejected']:
+        return jsonify({'success': False, 'message': 'Invoice status already finalized'}), 400
+
+    # Update status
+    db.session.execute(
+        text("UPDATE invoices SET status = :status WHERE id = :id"),
+        {'status': new_status.lower(), 'id': invoice_id}
+    )
+    db.session.commit()
+    return jsonify({'success': True, 'message': f'Status updated to {new_status}'})
+
 
 if __name__ == "__main__":
     with app.app_context():
