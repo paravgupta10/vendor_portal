@@ -20,8 +20,8 @@
       </div>
       <a href="{{ url_for('view_registrations') }}">View Vendors</a>
       <a href="{{ url_for('review_vendors') }}">Review Registrations</a>
-      <a href="https://supabase.com/dashboard/project/ryfwobovbxrkypiqoscm" target="_blank">Supabase</a>
       <a href="{{ url_for('admin_invoices') }}">Invoices</a>
+      <a href="https://supabase.com/dashboard/project/ryfwobovbxrkypiqoscm" target="_blank">Supabase</a>
     </div>
   </div>
 
@@ -54,7 +54,23 @@
   </div>
   <script>
     function toggleSidebar() {
-      document.querySelector('.sidebar').classList.toggle('active');
+      const sidebar = document.querySelector('.sidebar');  // ✅ Fix
+      sidebar.classList.toggle('active');
+
+      const mainContent = document.querySelector('.main-content');
+      if (sidebar.classList.contains('active')) {
+        mainContent.addEventListener('click', collapseSidebarOnce);
+      } else {
+        mainContent.removeEventListener('click', collapseSidebarOnce);
+      }
+    }
+
+    function collapseSidebarOnce() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.classList.remove('active');
+
+      const mainContent = document.querySelector('.main-content');
+      mainContent.removeEventListener('click', collapseSidebarOnce);
     }
   </script>
 </body>

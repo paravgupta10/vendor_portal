@@ -1,11 +1,12 @@
 :root {
-  --button-bg: #678f5a;
+  --button-bg: #415a38;
   --button-hover: #4d7342;
+  --sidebar-hover: #b49158;
   --light-bg: #ffffff;
   --text-dark: #2a2a2a;
   --text-muted: #555;
   --radius: 12px;
-  --card-shadow: rgba(0, 0, 0, 0.15);
+  --card-shadow: rgba(0, 0, 0, 0.1);
 }
 
 * {
@@ -15,145 +16,184 @@
 }
 
 body {
-  min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(to right, #b8e6ae, #a2d49c);
-  background-size: cover;
   color: var(--text-dark);
-  padding: 20px;
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ========== SIDEBAR ========== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 220px;
+  background: linear-gradient(to bottom, #2d6026, #174310);
+  padding-top: 90px;
+  color: white;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transform: translateX(0);
+  transition: transform 0.3s ease-in-out;
+  will-change: transform;
+}
+
+.sidebar h3 {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.4rem;
+}
+
+.sidebar .logo {
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 10px;
+}
+
+.sidebar .logo img {
+  max-width: 150px;
+  height: auto;
+  border-radius: 8px;
+}
+
+.sidebar a {
+  display: block;
+  padding: 12px 26px;
+  color: white;
+  text-decoration: none;
+  margin: 12px 0;
+  border: 1px solid #ffffff2a;
+  border-radius: 8px;
+  transition: background 0.2s, border 0.2s;
+  font-weight: 500;
+}
+
+.sidebar a:hover {
+  background-color: var(--sidebar-hover);
+  border-color: #ffffff4d;
+}
+
+/* ========== MAIN CONTENT ========== */
+.main-content {
+  margin-left: 220px;
+  padding: 100px 30px 30px;
+  width: calc(100% - 220px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: none;
 }
 
-/* Top Right Fixed Button */
-.fixed-top {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  background-color: #dc3545;
-  color: #fff;
-  padding: 10px 16px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.fixed-top:hover {
-  background-color: #ffeaea;
-  color: #dc3545;
-  text-decoration: underline;
-}
-
-/* Card Container */
-.dashboard-container {
-  max-width: 800px;
+.main-panel,
+.section-box {
   width: 100%;
-  margin-top: 100px;
-  padding: 40px;
-  background: var(--light-bg);
-  border-radius: var(--radius);
-  box-shadow: 0 8px 20px var(--card-shadow);
+  max-width: 500px;
+  margin: 0 auto 30px;
   text-align: center;
 }
 
-/* Header */
-h2 {
-  font-size: 32px;
-  color: #1e3b1e;
-  margin-bottom: 15px;
-}
-
-/* Info Paragraphs */
-.info p {
-  font-size: 16px;
-  color: var(--text-muted);
-  margin-bottom: 10px;
-}
-
-/* Task List */
-ul {
-  text-align: left;
-  margin-top: 20px;
-  margin-bottom: 30px;
-  color: #333;
-  padding-left: 22px;
-}
-
-li {
-  margin-bottom: 10px;
-  line-height: 1.7;
-}
-
-/* Button Container */
-.buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
-}
-
-/* Styled Buttons */
-.buttons a {
-  text-decoration: none;
-  background: var(--button-bg);
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: bold;
-  transition: background 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 6px var(--card-shadow);
-}
-
-.buttons a:hover {
-  background: var(--button-hover);
-  transform: translateY(-2px);
-}
-
-/* Details Section */
-.details-section {
-  margin-top: 30px;
-  background: #ffffff;
+/* ========== SECTION BOX ========== */
+.section-box {
+  display: none;
+  background: var(--light-bg);
   padding: 30px;
   border-radius: var(--radius);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-  max-width: 800px;
-  width: 100%;
+  box-shadow: 0 4px 15px var(--card-shadow);
 }
 
-/* Details Header */
-.details-section h3 {
-  margin-bottom: 20px;
-  color: #2f502a;
-  font-size: 22px;
-  font-weight: 600;
+.section-box.show {
+  display: block;
 }
 
-/* Grid for Details */
+.section-box table,
+.section-box .details-grid {
+  text-align: left;
+}
+
+.section-box h3 {
+  text-align: center;
+}
+
+/* ========== GRID & TABLE ========== */
 .details-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
+  margin-top: 15px;
 }
 
 .details-grid p {
   margin: 0;
   color: #444;
-  line-height: 1.6;
 }
 
-.details-grid strong {
-  color: #222;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
 }
 
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+/* ========== BUTTONS ========== */
+.tab-button {
+  background: var(--button-bg);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.tab-button:hover {
+  background: var(--button-hover);
+}
+
+/* ========== LOGOUT BUTTON ========== */
+.logout {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  z-index: 2000;
+  transition: all 0.3s ease;
+}
+
+.logout:hover {
+  background-color: #ffeaea;
+  color: #dc3545;
+}
+
+/* ========== SIDEBAR TOGGLE ========== */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1100;
+  background-color: #57d147;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  font-size: 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* ========== TOAST ========== */
 .toast {
   position: fixed;
   bottom: 20px;
@@ -164,86 +204,110 @@ li {
   border-radius: 5px;
   font-size: 14px;
   z-index: 9999;
-  box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
   transition: opacity 0.5s ease-in-out;
+  max-width: 90vw;
+  word-wrap: break-word;
 }
+
 .toast.hidden {
   opacity: 0;
   pointer-events: none;
 }
+
 .toast.show {
   opacity: 1;
 }
 
-/* Responsive Adjustments */
-@media (max-width: 600px) {
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .sidebar-toggle {
+    display: block;
+  }
+
+  .main-content {
+    margin-left: 0;
+    margin-top: 60px;
+    padding: 100px 20px 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .section-box,
+  .main-panel {
+    max-width: 500px;
+    margin-bottom: 30px;
+  }
+
   .details-grid {
     grid-template-columns: 1fr;
   }
 
-  .dashboard-container {
-    padding: 24px;
-  }
-
-  h2 {
-    font-size: 24px;
-  }
-
-  .buttons a {
-    padding: 10px 18px;
-    font-size: 14px;
-  }
-
-  .fixed-top {
+  .logout {
+    top: 10px;
+    right: 10px;
     padding: 8px 14px;
-    font-size: 14px;
+    font-size: 0.9rem;
+  }
+
+  .tab-button {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  #reviewSection table {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  #reviewSection {
+    overflow-x: auto;
   }
 }
 
+/* ========== EXTRA SMALL SCREENS ========== */
 @media (max-width: 480px) {
-  .dashboard-container {
-    padding: 20px;
-    margin-top: 80px;
+  .tab-button {
+    padding: 10px;
+    font-size: 0.9rem;
   }
 
-  h2 {
-    font-size: 20px;
-    margin-bottom: 12px;
+  .main-panel {
+    font-size: 0.85rem;
+    padding: 16px;
   }
 
-  .info p {
-    font-size: 14px;
+  .logout {
+    padding: 6px 12px;
+    font-size: 0.8rem;
   }
 
-  ul {
-    padding-left: 18px;
-    font-size: 14px;
+  .main-content {
+    padding: 15px;
   }
 
-  li {
-    line-height: 1.5;
-    margin-bottom: 8px;
+  table th, table td {
+    font-size: 0.85rem;
   }
 
-  .buttons a {
-    padding: 8px 16px;
-    font-size: 13.5px;
+  .section-box {
+    padding: 16px;
   }
+}
 
-  .fixed-top {
-    padding: 7px 12px;
-    font-size: 13px;
-  }
-
-  .details-section {
-    padding: 20px;
-  }
-
-  .details-section h3 {
-    font-size: 18px;
-  }
-
-  .details-grid p {
-    font-size: 14px;
-  }
+/* ========== TABLE WRAPPER ========== */
+.table-wrapper {
+  overflow-x: auto;
+  width: 100%;
 }

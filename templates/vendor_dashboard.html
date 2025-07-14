@@ -1,64 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Vendor Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/vendor_dashboard.css') }}">
 </head>
 <body>
-  <a href="/logout" class="fixed-top">Logout</a>
 
-  <div class="dashboard-container">
-    <h2>Welcome, {{ company }}!</h2>
+  <a href="/logout" class="logout">Logout</a>
+  <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
 
-    <div class="info">
-      <p><strong>Email:</strong> {{ session.get('email', 'Not shown here') }}</p>
-      <p><strong>Registration Status:</strong> {{ vendor.status|capitalize }}</p>
+  <div class="sidebar">
+    <div class="sidebar-content">
+      <h3>Vendor Panel</h3>
+      <div class="logo">
+        <img src="/static/images/login2.jpeg" alt="Vendor Logo" />
+      </div>
+      <a href="#" onclick="showSection('details')">Vendor Details</a>
+      <a href="#" onclick="showSection('upload')">Upload Invoice</a>
+      <a href="#" onclick="showSection('review')">Review Invoices</a>
     </div>
   </div>
 
-  {% if vendor %}
-  <div class="details-section">
-    <h3>Your Registration Details</h3>
-    <div class="details-grid">
-      <p><strong>Company Name:</strong> {{ vendor.company_name }}</p>
-      <p><strong>Type of Business:</strong> <span style="text-transform: uppercase;">{{ vendor.ownership_type }}</span></p>
-      <p><strong>Address:</strong> {{ vendor.registered_address }}</p>
-      <p><strong>TAN Number:</strong> {{ vendor.tan_number }}</p>
-      <p><strong>City:</strong> {{ vendor.city }}</p>
-      <p><strong>GST Number:</strong> {{ vendor.gst_number }}</p>
-      <p><strong>State:</strong> {{ vendor.state }}</p>
-      <p><strong>Phone:</strong> {{ vendor.phone }}</p>
-      <p><strong>Country:</strong> {{ vendor.country }}</p>
+  <div class="main-content">
+    <!-- Welcome + Status always shown -->
+    <div class="section-box show" id="welcomeSection">
+      <h2>Welcome, {{ company }}!</h2>
+      <div class="info">
+        <p><strong>Email:</strong> {{ session.get('email', 'Not shown here') }}</p>
+        <p><strong>Registration Status:</strong> {{ vendor.status|capitalize }}</p>
+      </div>
     </div>
+
+    <!-- Hidden Sections -->
+    <div id="detailsSection" class="section-box">
+      <h3>Your Registration Details</h3>
+      <div class="details-grid">
+        <p><strong>Company Name:</strong> {{ vendor.company_name }}</p>
+        <p><strong>Type of Business:</strong> <span style="text-transform: uppercase;">{{ vendor.ownership_type }}</span></p>
+        <p><strong>Address:</strong> {{ vendor.registered_address }}</p>
+        <p><strong>TAN Number:</strong> {{ vendor.tan_number }}</p>
+        <p><strong>City:</strong> {{ vendor.city }}</p>
+        <p><strong>GST Number:</strong> {{ vendor.gst_number }}</p>
+        <p><strong>State:</strong> {{ vendor.state }}</p>
+        <p><strong>Phone:</strong> {{ vendor.phone }}</p>
+        <p><strong>Country:</strong> {{ vendor.country }}</p>
+      </div>
+    </div>
+
+    {% if vendor.status == 'approved' %}
+    <div id="uploadSection" class="section-box">
+      <h3>Upload Invoice</h3><br>
+      <p>Please upload your invoice in JPEG format.</p><br>
+      <form action="{{ url_for('upload_invoice') }}" method="POST" enctype="multipart/form-data">
+        <input type="file" name="invoice" accept=".jpeg, .jpg" required style="padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+        <br><br>
+        <button type="submit" class="tab-button">Submit Invoice</button>
+      </form>
+    </div>
+
+    <div id="reviewSection" class="section-box">
+      <h3>Your Uploaded Invoices</h3>
+      {% if invoices %}
+      <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>File Name</th>
+            <th>Upload Date</th>
+            <th>Status</th>
+            <th>View</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inv in invoices %}
+          <tr>
+            <td>{{ inv.file_name }}</td>
+            <td>{{ inv.uploaded_at.strftime('%Y-%m-%d') }}</td>
+            <td>{{ inv.status|capitalize }}</td>
+            <td><a href="{{ inv.file_url }}" target="_blank">View</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+      {% else %}
+      <p>No invoices uploaded yet.</p>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="section-box" style="background: #fff3f3; color: #b94a48; text-align: center;">
+      <h3>Invoice Upload Unavailable</h3>
+      <p>You can upload invoices only after your registration has been <strong>approved</strong>.</p>
+    </div>
+    {% endif %}
   </div>
 
-  {% if vendor.status == 'approved' %}
-  <div class="upload-section" style="margin: 40px auto; max-width: 800px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center;">
-    <h3>Upload Invoice</h3>
-    <form action="{{ url_for('upload_invoice') }}" method="POST" enctype="multipart/form-data">
-      <input 
-        type="file" 
-        name="invoice" 
-        accept=".jpeg, .jpg" 
-        required
-        style="margin-top: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; display: inline-block;">
-      <br><br>
-      <button type="submit" style="background-color: #425a3f; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
-        Upload Invoice
-      </button>
-    </form>
-  </div>
-  {% else %}
-  <div class="upload-section" style="margin: 40px auto; max-width: 800px; background: #fff3f3; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: center; color: #b94a48;">
-    <h3>Invoice Upload Unavailable</h3>
-    <p>You can upload invoices only after your registration has been <strong>approved</strong>.</p>
-  </div>
-  {% endif %}
-  {% endif %}
-
-  <!-- Toast Notification -->
   <div id="toast" class="toast hidden">Invoice uploaded successfully.</div>
 
   {% with messages = get_flashed_messages() %}
@@ -79,5 +117,39 @@
     {% endfor %}
   {% endwith %}
 
+  <script>
+  function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.classList.toggle('active');
+
+    // Add or remove overlay click listener
+    const mainContent = document.querySelector('.main-content');
+    if (sidebar.classList.contains('active')) {
+      mainContent.addEventListener('click', collapseSidebarOnce);
+    } else {
+      mainContent.removeEventListener('click', collapseSidebarOnce);
+    }
+  }
+
+  function collapseSidebarOnce() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.classList.remove('active');
+
+    const mainContent = document.querySelector('.main-content');
+    mainContent.removeEventListener('click', collapseSidebarOnce);
+  }
+
+   function showSection(section) {
+      const sections = ['detailsSection', 'uploadSection', 'reviewSection'];
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('show');
+      });
+
+      const selected = document.getElementById(section + 'Section');
+      if (selected) selected.classList.add('show');
+    }
+  </script>
 </body>
+
 </html>

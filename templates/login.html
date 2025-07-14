@@ -9,6 +9,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <script>
+      window.onload = () => {
+        const flashMessages = JSON.parse('{{ messages|tojson|safe }}');
+        flashMessages.forEach(msg => alert(msg));
+      };
+    </script>
+  {% endif %}
+  {% endwith %}
   <div class="container">
     <div class="left-section">
     </div>
@@ -35,12 +45,6 @@
 
         <button type="submit">Login</button>
 
-        <!-- Error Message (Flask Injected) -->
-        <div class="error-message">
-          {% if error %}
-            <p>{{ error }}</p>
-          {% endif %}
-        </div>
       </form>
 
       <!-- Signup Form -->

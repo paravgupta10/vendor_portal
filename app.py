@@ -168,11 +168,11 @@ def login():
                 return redirect(url_for('vendor_dashboard'))
             else:
                 return redirect(url_for('signup'))
-
         else:
-            flash("Invalid credentials.")
-    return render_template("login.html")
+            flash("Invalid email or password.")
+            return redirect(url_for('login'))  
 
+    return render_template("login.html")
 
 @app.route("/register", methods=["POST"])
 def register():
@@ -413,7 +413,14 @@ def vendor_dashboard():
     if not vendor:
         flash("Vendor details not found.")
         return redirect(url_for('logout'))
-    return render_template("vendor_dashboard.html", company=vendor.company_name, vendor=vendor)
+
+    invoices = Invoice.query.filter_by(vendor_id=vendor.id).order_by(Invoice.uploaded_at.desc()).all()
+
+    return render_template("vendor_dashboard.html", 
+                           company=vendor.company_name, 
+                           vendor=vendor,
+                           invoices=invoices)
+
 
 @app.route("/admin-dashboard")
 @login_required

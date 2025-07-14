@@ -155,7 +155,7 @@ body {
   top: 20px;
   left: 20px;
   z-index: 1100;
-  background-color: #396f32;
+  background-color: #57d147;
   color: #fff;
   border: none;
   padding: 10px 16px;
@@ -168,11 +168,13 @@ body {
 /* Responsive Behavior */
 @media (max-width: 768px) {
   .sidebar {
-    display: none;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+    will-change: transform;
   }
 
   .sidebar.active {
-    display: block;
+    transform: translateX(0);
   }
 
   .sidebar-toggle {
@@ -181,6 +183,7 @@ body {
 
   .main-content {
     margin-left: 0;
+    margin-top: 60px;
     padding: 80px 20px 20px 20px;
   }
 
@@ -204,6 +207,7 @@ body {
     font-size: 0.95rem;
   }
 }
+
 
 @media (max-width: 480px) {
   .card-box {
