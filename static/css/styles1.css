@@ -28,6 +28,7 @@ body {
   justify-content: center;
   padding: 1.5rem;
   overflow-x: hidden;
+  flex-direction: column;
 }
 
 .container {
@@ -40,6 +41,16 @@ body {
   width: 100%;
   overflow: hidden;
   backdrop-filter: blur(10px);
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeSlideIn 1s ease forwards;
+}
+
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .left-section,
@@ -55,16 +66,12 @@ body {
 
 .left-section {
   background: url("/static/images/bg.jpeg") no-repeat center center;
-  background-size: contain; /* ensures full image fits */
+  background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   position: relative;
   color: #ffffff;
   transition: transform 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
 .footer-brand {
@@ -99,18 +106,16 @@ body {
   transform: translateX(-50%);
   font-size: 1rem;
   font-weight: bold;
-  white-space: nowrap; /* Ensures single line */
-  overflow: hidden; /* Prevents overflow */
-  text-overflow: ellipsis; /* Adds ellipsis if text overflows */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
 
 img {
   max-width: 200px;
   height: auto;
   margin: 0 auto 1rem auto;
   transition: transform 0.3s ease;
-  filter: none;
 }
 
 img:hover {
@@ -118,7 +123,7 @@ img:hover {
 }
 
 .right-section {
-  background: var(--right-bg); /* Added green background */
+  background: var(--right-bg);
   align-items: center;
   border-left: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -138,20 +143,6 @@ img:hover {
   position: relative;
 }
 
-label {
-  display: block;
-  color: var(--text-color);
-  font-size: 0.95rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  text-align: left;
-}
-
-.required-label::after {
-  content: " *";
-  color: #ef4444;
-}
-
 input {
   width: 100%;
   padding: 0.875rem;
@@ -168,6 +159,44 @@ input:focus {
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
 }
 
+input::placeholder {
+  color: transparent;
+}
+
+input:focus + label,
+input:not(:placeholder-shown) + label {
+  top: -10px;
+  left: 10px;
+  font-size: 0.75rem;
+  color: var(--accent-color);
+  background: white;
+  padding: 0 4px;
+}
+
+input + label {
+  position: absolute;
+  left: 12px;
+  top: 14px;
+  color: #666;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+label {
+  display: block;
+  color: var(--text-color);
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+.required-label::after {
+  content: " *";
+  color: #ef4444;
+}
+
 button {
   width: 100%;
   max-width: var(--form-max-width);
@@ -180,12 +209,13 @@ button {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 button:hover {
   background-color: var(--hover-color);
-  transform: translateY(-2px);
+  transform: scale(1.03);
+  box-shadow: 0 0 10px var(--accent-color);
 }
 
 button:active {
@@ -221,24 +251,48 @@ button:active {
   text-align: center;
 }
 
-/* Responsive Media Queries */
+#login-form, #signup-form {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+#login-form[style*="none"], #signup-form[style*="none"] {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Flash toast */
+.flash-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #34d399;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  transform: translateY(-20px);
+  z-index: 9999;
+}
+.flash-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 @media (max-width: 1024px) {
   .container {
     max-width: 900px;
   }
-
   h3 {
     font-size: 1.75rem;
   }
-
   .left-section p {
-    font-size: 0.85rem; /* Adjusted for smaller screens */
+    font-size: 0.85rem;
   }
-
   img {
     max-width: 160px;
   }
-
   #form-title {
     font-size: 1.5rem;
   }
@@ -250,27 +304,20 @@ button:active {
     height: auto;
     border-radius: 12px;
   }
-
   .left-section,
   .right-section {
     flex: 1 1 100%;
     padding: 2rem;
   }
-
   .left-section p {
-    font-size: 0.8rem; /* Further adjusted for smaller screens */
+    font-size: 0.8rem;
   }
-
   img {
     max-width: 140px;
   }
-
   #form-title {
     font-size: 1.3rem;
   }
-}
-/* Footer mobile layout */
-@media (max-width: 768px) {
   .footer-brand {
     position: static;
     margin-top: 2rem;
@@ -279,49 +326,35 @@ button:active {
     text-align: center;
     font-size: 13px;
   }
-
   .footer-brand a {
     font-size: 16px;
   }
 }
-@media (max-width: 768px) {
-  body {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-
 
 @media (max-width: 480px) {
   .left-section p {
-    font-size: 0.75rem; /* Even smaller for very small screens */
+    font-size: 0.75rem;
   }
-
   h3 {
     font-size: 1.5rem;
   }
-
   #form-title {
     font-size: 1.2rem;
   }
-
   button {
     font-size: 0.95rem;
     padding: 0.75rem;
   }
-
   input {
     padding: 0.75rem;
     font-size: 0.95rem;
   }
 }
 
-/* Enforce 60:40 layout for larger screens */
 @media (min-width: 769px) {
   .left-section {
     flex: 0 0 52%;
   }
-
   .right-section {
     flex: 0 0 48%;
   }

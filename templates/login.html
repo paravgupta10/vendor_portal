@@ -5,20 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vendor Registration Portal</title>
   <link rel="stylesheet" href="static/css/styles1.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div class="flash-toast" id="flash-toast"></div>
+
   {% with messages = get_flashed_messages() %}
   {% if messages %}
     <script>
       window.onload = () => {
         const flashMessages = JSON.parse('{{ messages|tojson|safe }}');
-        flashMessages.forEach(msg => alert(msg));
+        const toast = document.getElementById('flash-toast');
+        flashMessages.forEach(msg => {
+          toast.textContent = msg;
+          toast.classList.add('show');
+          setTimeout(() => toast.classList.remove('show'), 4000);
+        });
       };
     </script>
   {% endif %}
   {% endwith %}
+
   <div class="container">
     <div class="left-section">
     </div>
@@ -30,13 +38,13 @@
       <!-- Login Form -->
       <form id="login-form" method="POST" action="/login" onsubmit="return validateLogin(event)">
         <div class="form-group">
-          <label for="login-email" class="required-label">Email</label>
           <input type="email" id="login-email" name="email" placeholder="example@mail.com" required />
+          <label for="login-email" class="required-label">Email</label>
         </div>
 
         <div class="form-group">
-          <label for="login-password" class="required-label">Password</label>
           <input type="password" id="login-password" name="password" placeholder="••••••••" required />
+          <label for="login-password" class="required-label">Password</label>
         </div>
 
         <div class="forgot">
@@ -44,116 +52,123 @@
         </div>
 
         <button type="submit">Login</button>
-
       </form>
 
       <!-- Signup Form -->
       <form id="signup-form" method="POST" action="/register" style="display: none;" onsubmit="return validateSignup(event)">
         <div class="form-group">
-          <label for="signup-email" class="required-label">Email</label>
           <input type="email" id="signup-email" name="email" placeholder="example@mail.com" required />
+          <label for="signup-email" class="required-label">Email</label>
         </div>
+
         <div class="form-group">
-          <label for="signup-password" class="required-label">New Password</label>
           <input type="password" id="signup-password" name="password" placeholder="••••••••" required />
+          <label for="signup-password" class="required-label">New Password</label>
         </div>
+
         <div class="form-group">
-          <label for="confirm-password" class="required-label">Confirm Password</label>
           <input type="password" id="confirm-password" name="confirm_password" placeholder="••••••••" required />
+          <label for="confirm-password" class="required-label">Confirm Password</label>
         </div>
+
         <button type="submit">Sign Up</button>
       </form>
 
-      <!-- Switch between forms -->
+      <!-- Switch Forms -->
       <div class="switch-form" id="switch-form">
         Not Registered Yet? <a href="#" onclick="showSignup()">Create an account</a>
       </div>
     </div>
   </div>
 
+  <!-- Footer -->
+  <div class="footer-brand">
+    <span>Parav Gupta:</span>
+    <a href="https://github.com/paravgupta10" target="_blank" aria-label="GitHub">
+      <i class="fab fa-github"></i>
+    </a>
+    <a href="https://linkedin.com/in/paravgupta10" target="_blank" aria-label="LinkedIn">
+      <i class="fab fa-linkedin"></i>
+    </a>
+  </div>
   <script>
-  function showSignup() {
-    document.getElementById('form-title').textContent = 'Create your Account';
-    document.getElementById('login-form').style.display = 'none';
-    document.getElementById('signup-form').style.display = 'block';
-    document.getElementById('switch-form').innerHTML =
-      'Already have an account? <a href="#" onclick="showLogin()">Login</a>';
-  }
-
-  function showLogin() {
-    document.getElementById('form-title').textContent = 'Login to your Account';
-    document.getElementById('login-form').style.display = 'block';
-    document.getElementById('signup-form').style.display = 'none';
-    document.getElementById('switch-form').innerHTML =
-      'Not Registered Yet? <a href="#" onclick="showSignup()">Create an account</a>';
-  }
-
-  function isValidEmail(email) {
-    const pattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
-    return pattern.test(email);
-  }
-
-  function isStrongPassword(password) {
-    const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
-    return strongPattern.test(password);
-  }
-
-  function validateLogin(e) {
-    const emailInput = document.getElementById('login-email');
-    const passwordInput = document.getElementById('login-password');
-
-    if (!isValidEmail(emailInput.value)) {
-      alert('Please enter a valid email address.');
-      emailInput.focus();
-      e.preventDefault();
-      return false;
+    function showSignup() {
+      document.getElementById('form-title').textContent = 'Create your Account';
+      document.getElementById('login-form').style.display = 'none';
+      document.getElementById('signup-form').style.display = 'block';
+      document.getElementById('switch-form').innerHTML =
+        'Already have an account? <a href="#" onclick="showLogin()">Login</a>';
     }
 
-    if (!isStrongPassword(passwordInput.value)) {
-      alert('Password must be at least 8 characters long and include a capital letter, a number, and a special character.');
-      passwordInput.focus();
-      e.preventDefault();
-      return false;
+    function showLogin() {
+      document.getElementById('form-title').textContent = 'Login to your Account';
+      document.getElementById('login-form').style.display = 'block';
+      document.getElementById('signup-form').style.display = 'none';
+      document.getElementById('switch-form').innerHTML =
+        'Not Registered Yet? <a href="#" onclick="showSignup()">Create an account</a>';
     }
 
-    return true;
-  }
-
-  function validateSignup(e) {
-    const email = document.getElementById('signup-email').value;
-    const password = document.getElementById('signup-password').value;
-    const confirmPassword = document.getElementById('confirm-password').value;
-
-    if (!isValidEmail(email)) {
-      alert('Please enter a valid email address.');
-      e.preventDefault();
-      return false;
+    function isValidEmail(email) {
+      const pattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+      return pattern.test(email);
     }
 
-    if (!isStrongPassword(password)) {
-      alert('Password must be at least 8 characters long and include a capital letter, a number, and a special character.');
-      e.preventDefault();
-      return false;
+    function isStrongPassword(password) {
+      const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+      return strongPattern.test(password);
     }
 
-    if (password !== confirmPassword) {
-      alert('Passwords do not match!');
-      e.preventDefault();
-      return false;
+    function validateLogin(e) {
+      const emailInput = document.getElementById('login-email');
+      const passwordInput = document.getElementById('login-password');
+
+      if (!isValidEmail(emailInput.value)) {
+        showToast('Please enter a valid email address.');
+        e.preventDefault();
+        return false;
+      }
+
+      if (!isStrongPassword(passwordInput.value)) {
+        showToast('Password must be 8+ chars including capital letter, a number, and special char!');
+        e.preventDefault();
+        return false;
+      }
+
+      return true;
     }
 
-    return true;
-  }
-</script>
-<div class="footer-brand">
-  <span>Parav Gupta:</span>
-  <a href="https://github.com/paravgupta10" target="_blank" aria-label="GitHub">
-    <i class="fab fa-github"></i>
-  </a>
-  <a href="https://linkedin.com/in/paravgupta10" target="_blank" aria-label="LinkedIn">
-    <i class="fab fa-linkedin"></i>
-  </a>
-</div>
+    function validateSignup(e) {
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
 
+      if (!isValidEmail(email)) {
+        showToast('Please enter a valid email address.');
+        e.preventDefault();
+        return false;
+      }
+
+      if (!isStrongPassword(password)) {
+        showToast('Password must be 8+ chars including capital letter, a number, and special char!');
+        e.preventDefault();
+        return false;
+      }
+
+      if (password !== confirmPassword) {
+        showToast('Passwords do not match!');
+        e.preventDefault();
+        return false;
+      }
+
+      return true;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('flash-toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+  </script>
 </body>
 </html>
