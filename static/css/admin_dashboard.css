@@ -1,11 +1,11 @@
 :root {
   --button-bg: #c4a96f;
-  --button-hover: #b49158;
+  --button-hover: #e2a645;
   --light-bg: #ffffff;
   --text-dark: #222;
   --text-muted: #666;
   --radius: 12px;
-  --card-shadow: rgba(0, 0, 0, 0.1);
+  --card-shadow: rgba(0, 0, 0, 0.08);
   --gradient-bg: linear-gradient(to right, #b8e6ae, #a2d49c);
 }
 
@@ -22,16 +22,32 @@ body {
   display: flex;
   min-height: 100vh;
   overflow-x: hidden;
+  opacity: 0;
+  transition: opacity 0.6s ease-in;
 }
 
-/* Sidebar */
+body.loaded {
+    opacity: 1;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .sidebar {
   position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
   width: 220px;
-  background: linear-gradient(to bottom, #2d6026, #174310);
+  background: linear-gradient(to bottom, #306329, #174310);
   padding-top: 20px;
   color: white;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
@@ -54,13 +70,14 @@ body {
   margin: 12px 0;
   border: 1px solid #ffffff2a;
   border-radius: 8px;
-  transition: background 0.2s, border 0.2s;
+  transition: background 0.2s, border 0.2s, transform 0.2s ease-out;
   font-weight: 500;
 }
 
 .sidebar a:hover {
   background-color: var(--button-hover);
   border-color: #ffffff4d;
+  transform: translateX(5px);
 }
 
 .sidebar .logo {
@@ -75,24 +92,27 @@ body {
   border-radius: 8px;
 }
 
-/* Main Content */
 .main-content {
   margin-left: 220px;
   padding: 80px 30px;
   width: 100%;
 }
 
-/* Welcome Box */
 .main-panel {
   background-color: var(--light-bg);
   padding: 30px;
   margin-bottom: 30px;
   text-align: center;
   border-radius: var(--radius);
-  box-shadow: 0 2px 8px var(--card-shadow);
+  box-shadow: 0 4px 15px var(--card-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Top Summary Cards */
+.main-panel:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
 .top-bar {
   display: flex;
   flex-wrap: wrap;
@@ -106,13 +126,20 @@ body {
   background: linear-gradient(to top right, #f7fff7, #e5f6e5);
   padding: 20px;
   border-radius: var(--radius);
-  box-shadow: 0 2px 6px var(--card-shadow);
+  box-shadow: 0 4px 15px var(--card-shadow);
   text-align: center;
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.card-box.animated {
+  animation: fadeInUp 0.5s ease-out forwards;
 }
 
 .card-box:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 .card-box h5 {
@@ -128,7 +155,6 @@ body {
   font-weight: bold;
 }
 
-/* Logout */
 .logout {
   position: fixed;
   top: 20px;
@@ -141,14 +167,22 @@ body {
   font-weight: bold;
   z-index: 2000;
   transition: all 0.3s ease;
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .logout:hover {
-  background-color: #ffeaea;
-  color: #dc3545;
+  background-color: #c82333;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Toggle Button */
+.logout:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .sidebar-toggle {
   display: none;
   position: fixed;
@@ -163,68 +197,60 @@ body {
   border-radius: 6px;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
 }
 
-/* Responsive Behavior */
+.sidebar-toggle:hover {
+    transform: scale(1.1);
+    background-color: #4caf3c;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
     transition: transform 0.3s ease-in-out;
     will-change: transform;
   }
-
   .sidebar.active {
     transform: translateX(0);
   }
-
   .sidebar-toggle {
     display: block;
   }
-
   .main-content {
     margin-left: 0;
     margin-top: 60px;
     padding: 80px 20px 20px 20px;
   }
-
   .top-bar {
     flex-direction: column;
   }
-
   .logout {
     right: 10px;
     top: 10px;
     padding: 8px 14px;
     font-size: 0.9rem;
   }
-
-  .card-box {
+  .card-box, .main-panel {
     font-size: 0.95rem;
   }
-
   .main-panel {
     padding: 20px;
-    font-size: 0.95rem;
   }
 }
-
 
 @media (max-width: 480px) {
   .card-box {
     padding: 14px;
-    font-size: 0.85rem;
   }
-
   .main-panel {
     font-size: 0.85rem;
     padding: 16px;
   }
-
   .logout {
     padding: 6px 12px;
     font-size: 0.8rem;
   }
-
   .main-content {
     padding: 15px;
   }
@@ -232,4 +258,3 @@ body {
 .sidebar-content {
   padding-top: 70px;
 }
-

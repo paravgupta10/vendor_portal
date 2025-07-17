@@ -1,12 +1,12 @@
 :root {
   --button-bg: #415a38;
   --button-hover: #4d7342;
-  --sidebar-hover: #b49158;
+  --sidebar-hover: #e2a645;
   --light-bg: #ffffff;
   --text-dark: #2a2a2a;
   --text-muted: #555;
   --radius: 12px;
-  --card-shadow: rgba(0, 0, 0, 0.1);
+  --card-shadow: rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -22,16 +22,30 @@ body {
   display: flex;
   min-height: 100vh;
   overflow-x: hidden;
+  opacity: 0;
+  transition: opacity 0.6s ease-in;
 }
 
-/* ========== SIDEBAR ========== */
+body.loaded {
+  opacity: 1;
+}
+
+.footer-contact {
+  text-align: center;
+  margin-top: 40px;
+  padding: 15px;
+  width: 100%;
+  max-width: 500px; 
+  font-size: 0.9rem;
+  color: #202020;
+} 
 .sidebar {
   position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
   width: 220px;
-  background: linear-gradient(to bottom, #2d6026, #174310);
+  background: linear-gradient(to bottom, #306329, #174310);
   padding-top: 90px;
   color: white;
   box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
@@ -67,16 +81,17 @@ body {
   margin: 12px 0;
   border: 1px solid #ffffff2a;
   border-radius: 8px;
-  transition: background 0.2s, border 0.2s;
+  transition: background 0.2s, border 0.2s, transform 0.2s ease-out;
   font-weight: 500;
+  position: relative;
 }
 
 .sidebar a:hover {
   background-color: var(--sidebar-hover);
   border-color: #ffffff4d;
+  transform: translateX(5px);
 }
 
-/* ========== MAIN CONTENT ========== */
 .main-content {
   margin-left: 220px;
   padding: 100px 30px 30px;
@@ -94,17 +109,36 @@ body {
   text-align: center;
 }
 
-/* ========== SECTION BOX ========== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .section-box {
   display: none;
   background: var(--light-bg);
   padding: 30px;
   border-radius: var(--radius);
   box-shadow: 0 4px 15px var(--card-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform, box-shadow;
+}
+
+.section-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
 }
 
 .section-box.show {
   display: block;
+  animation: fadeInUp 0.5s ease-out forwards;
 }
 
 .section-box table,
@@ -116,7 +150,6 @@ body {
   text-align: center;
 }
 
-/* ========== GRID & TABLE ========== */
 .details-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -140,7 +173,6 @@ th, td {
   padding: 10px;
 }
 
-/* ========== BUTTONS ========== */
 .tab-button {
   background: var(--button-bg);
   color: white;
@@ -150,13 +182,22 @@ th, td {
   font-weight: bold;
   cursor: pointer;
   margin-top: 10px;
+  transition: all 0.3s ease;
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .tab-button:hover {
   background: var(--button-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* ========== LOGOUT BUTTON ========== */
+.tab-button:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 .logout {
   position: fixed;
   top: 20px;
@@ -169,14 +210,17 @@ th, td {
   font-weight: bold;
   z-index: 2000;
   transition: all 0.3s ease;
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .logout:hover {
-  background-color: #ffeaea;
-  color: #dc3545;
+  background-color: #c82333;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* ========== SIDEBAR TOGGLE ========== */
 .sidebar-toggle {
   display: none;
   position: fixed;
@@ -191,9 +235,14 @@ th, td {
   border-radius: 6px;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
 }
 
-/* ========== TOAST ========== */
+.sidebar-toggle:hover {
+    transform: scale(1.1);
+    background-color: #4caf3c;
+}
+
 .toast {
   position: fixed;
   bottom: 20px;
@@ -205,21 +254,19 @@ th, td {
   font-size: 14px;
   z-index: 9999;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  transition: opacity 0.5s ease-in-out;
+  /* UPDATED - Added transform for a slide-in effect */
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  transform: translateY(100%);
+  opacity: 0;
   max-width: 90vw;
   word-wrap: break-word;
 }
 
-.toast.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
 .toast.show {
   opacity: 1;
+  transform: translateY(0);
 }
 
-/* ========== RESPONSIVE ========== */
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
@@ -276,37 +323,29 @@ th, td {
   }
 }
 
-/* ========== EXTRA SMALL SCREENS ========== */
 @media (max-width: 480px) {
   .tab-button {
     padding: 10px;
     font-size: 0.9rem;
   }
-
   .main-panel {
     font-size: 0.85rem;
     padding: 16px;
   }
-
   .logout {
     padding: 6px 12px;
     font-size: 0.8rem;
   }
-
   .main-content {
     padding: 15px;
   }
-
   table th, table td {
     font-size: 0.85rem;
   }
-
   .section-box {
     padding: 16px;
   }
 }
-
-/* ========== TABLE WRAPPER ========== */
 .table-wrapper {
   overflow-x: auto;
   width: 100%;

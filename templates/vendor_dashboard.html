@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <title>Vendor Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/vendor_dashboard.css') }}">
+  <link rel="stylesheet" href="/static/css/vendor_dashboard.css" />
+  
 </head>
 <body>
 
@@ -24,7 +25,6 @@
   </div>
 
   <div class="main-content">
-    <!-- Welcome + Status always shown -->
     <div class="section-box show" id="welcomeSection">
       <h2>Welcome, {{ company }}!</h2>
       <div class="info">
@@ -33,7 +33,6 @@
       </div>
     </div>
 
-    <!-- Hidden Sections -->
     <div id="detailsSection" class="section-box">
       <h3>Your Registration Details</h3>
       <div class="details-grid">
@@ -95,61 +94,85 @@
       <p>You can upload invoices only after your registration has been <strong>approved</strong>.</p>
     </div>
     {% endif %}
+
+    <div class="footer-contact">
+      <p>For any queries please contact Admin (admin1@example.com)</p>
+    </div>
+    
   </div>
 
-  <div id="toast" class="toast hidden">Invoice uploaded successfully.</div>
+  <div id="toast" class="toast">Invoice uploaded successfully.</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.classList.add('loaded');
+    });
+
+    /**
+     * Toggles the sidebar and adds a one-time event listener to the main
+     * content to close the sidebar when clicked.
+     */
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.classList.toggle('active');
+
+      const mainContent = document.querySelector('.main-content');
+      if (sidebar.classList.contains('active')) {
+        mainContent.addEventListener('click', collapseSidebarOnce);
+      } else {
+        mainContent.removeEventListener('click', collapseSidebarOnce);
+      }
+    }
+
+    /**
+     * Helper function to close the sidebar and remove its own event listener.
+     */
+    function collapseSidebarOnce() {
+      const sidebar = document.querySelector('.sidebar');
+      sidebar.classList.remove('active');
+
+      const mainContent = document.querySelector('.main-content');
+      mainContent.removeEventListener('click', collapseSidebarOnce);
+    }
+
+    function showSection(section) {
+        const sections = document.querySelectorAll('.section-box');
+        sections.forEach(s => {
+            if (s.id !== 'welcomeSection') {
+                s.classList.remove('show');
+            }
+        });
+        
+        const selected = document.getElementById(section + 'Section');
+        if (selected) {
+            selected.classList.add('show');
+        }
+
+        if (window.innerWidth <= 768) {
+            document.querySelector('.sidebar').classList.remove('active');
+        }
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+</script>
 
   {% with messages = get_flashed_messages() %}
     {% for message in messages %}
       {% if "Invoice uploaded successfully" in message %}
         <script>
           window.addEventListener('DOMContentLoaded', () => {
-            const toast = document.getElementById('toast');
-            toast.classList.remove('hidden');
-            toast.classList.add('show');
-            setTimeout(() => {
-              toast.classList.remove('show');
-              toast.classList.add('hidden');
-            }, 3000);
+            showToast("{{ message }}");
           });
         </script>
       {% endif %}
     {% endfor %}
   {% endwith %}
-
-  <script>
-  function toggleSidebar() {
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.classList.toggle('active');
-
-    // Add or remove overlay click listener
-    const mainContent = document.querySelector('.main-content');
-    if (sidebar.classList.contains('active')) {
-      mainContent.addEventListener('click', collapseSidebarOnce);
-    } else {
-      mainContent.removeEventListener('click', collapseSidebarOnce);
-    }
-  }
-
-  function collapseSidebarOnce() {
-    const sidebar = document.querySelector('.sidebar');
-    sidebar.classList.remove('active');
-
-    const mainContent = document.querySelector('.main-content');
-    mainContent.removeEventListener('click', collapseSidebarOnce);
-  }
-
-   function showSection(section) {
-      const sections = ['detailsSection', 'uploadSection', 'reviewSection'];
-      sections.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.classList.remove('show');
-      });
-
-      const selected = document.getElementById(section + 'Section');
-      if (selected) selected.classList.add('show');
-    }
-  </script>
 </body>
-
 </html>

@@ -4,12 +4,11 @@
   <meta charset="UTF-8" />
   <title>Admin Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+  <link rel="stylesheet" href="/static/css/admin_dashboard.css" />
 </head>
 <body>
 
   <a href="/logout" class="logout">Logout</a>
-  <!-- Toggle button for small screens -->
   <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
 
   <div class="sidebar">
@@ -52,9 +51,21 @@
       </div>
     </div>
   </div>
+
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.body.classList.add('loaded');
+
+        const cards = document.querySelectorAll('.card-box');
+        cards.forEach((card, index) => {
+            setTimeout(() => {
+                card.classList.add('animated');
+            }, index * 100); 
+        });
+    });
+    
     function toggleSidebar() {
-      const sidebar = document.querySelector('.sidebar');  // ✅ Fix
+      const sidebar = document.querySelector('.sidebar');
       sidebar.classList.toggle('active');
 
       const mainContent = document.querySelector('.main-content');
