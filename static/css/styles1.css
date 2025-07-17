@@ -10,7 +10,7 @@
   --glass-bg: rgba(255, 255, 255, 0.15);
   --max-width: 1250px;
   --form-max-width: 450px;
-  --right-bg: #d1e8d5; 
+  --right-bg: #d1e8d5;
 }
 
 
@@ -54,6 +54,7 @@ body {
   opacity: 0;
   transform: translateY(30px);
   animation: fadeSlideIn 1s ease forwards;
+  z-index: 1; 
 }
 
 @keyframes fadeSlideIn {
@@ -138,6 +139,19 @@ img:hover {
   border-left: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+/* For Chrome/Safari/Edge */
+input::-ms-reveal,
+input::-ms-clear {
+    display: none !important;
+}
+
+/* For Firefox */
+@-moz-document url-prefix() {
+  input[type="password"]::-moz-focus-inner {
+    border: none;
+  }
+}
+
 #form-title {
   font-size: 1.75rem;
   font-weight: 600;
@@ -150,7 +164,7 @@ img:hover {
   margin-bottom: 1.25rem;
   width: 100%;
   max-width: var(--form-max-width);
-  position: relative;
+  position: relative; 
 }
 
 input {
@@ -162,6 +176,11 @@ input {
   background: #ffffff;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
+
+.password-group input {
+    padding-right: 40px; 
+}
+
 
 input:focus {
   outline: none;
@@ -206,6 +225,23 @@ label {
   content: " *";
   color: #ef4444;
 }
+
+.password-toggle {
+    position: absolute;
+    right: 15px; 
+    top: 50%; 
+    transform: translateY(-50%); 
+    cursor: pointer;
+    color: #777; 
+    font-size: 1.1em; 
+    transition: color 0.2s ease-in-out;
+    z-index: 10; 
+}
+
+.password-toggle:hover {
+    color: var(--accent-color); 
+}
+
 
 button {
   width: 100%;

@@ -53,7 +53,6 @@ h2 {
 .btn-onhold:hover   { background-color: #e0a800; }
 .btn-rejected:hover { background-color: #c82333; }
 
-/* Vendor Table */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -69,7 +68,7 @@ table {
 }
 
 .table-wrapper table {
-  min-width: 1000px; /* Ensures table doesn’t shrink too much */
+  min-width: 1000px; 
 }
 
 th, td {
@@ -92,7 +91,6 @@ tr:hover td {
   cursor: pointer;
 }
 
-/* Vendor Details Section */
 .vendor-details {
   margin-top: 40px;
   display: none;

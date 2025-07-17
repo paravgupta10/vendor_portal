@@ -35,16 +35,18 @@
       <img src="static/images/login1.jpeg" alt="Vendor Management" />
       <h4 id="form-title">Login to your Account</h4>
 
-      <!-- Login Form -->
       <form id="login-form" method="POST" action="/login" onsubmit="return validateLogin(event)">
         <div class="form-group">
           <input type="email" id="login-email" name="email" placeholder="example@mail.com" required />
           <label for="login-email" class="required-label">Email</label>
         </div>
 
-        <div class="form-group">
+        <div class="form-group password-group"> {# Added password-group class #}
           <input type="password" id="login-password" name="password" placeholder="••••••••" required />
           <label for="login-password" class="required-label">Password</label>
+          <span class="password-toggle" onclick="togglePasswordVisibility('login-password', this)">
+            <i class="fa-solid fa-eye-slash"></i> {# Eye-slash icon #}
+          </span>
         </div>
 
         <div class="forgot">
@@ -54,34 +56,35 @@
         <button type="submit">Login</button>
       </form>
 
-      <!-- Signup Form -->
       <form id="signup-form" method="POST" action="/register" style="display: none;" onsubmit="return validateSignup(event)">
         <div class="form-group">
           <input type="email" id="signup-email" name="email" placeholder="example@mail.com" required />
           <label for="signup-email" class="required-label">Email</label>
         </div>
 
-        <div class="form-group">
+        <div class="form-group password-group">
           <input type="password" id="signup-password" name="password" placeholder="••••••••" required />
           <label for="signup-password" class="required-label">New Password</label>
+          </span>
         </div>
 
-        <div class="form-group">
+        <div class="form-group password-group"> 
           <input type="password" id="confirm-password" name="confirm_password" placeholder="••••••••" required />
           <label for="confirm-password" class="required-label">Confirm Password</label>
+          <span class="password-toggle" onclick="togglePasswordVisibility('confirm-password', this)">
+            <i class="fa-solid fa-eye-slash"></i> 
+          </span>
         </div>
 
         <button type="submit">Sign Up</button>
       </form>
 
-      <!-- Switch Forms -->
       <div class="switch-form" id="switch-form">
         Not Registered Yet? <a href="#" onclick="showSignup()">Create an account</a>
       </div>
     </div>
   </div>
 
-  <!-- Footer -->
   <div class="footer-brand">
     <span>Parav Gupta:</span>
     <a href="https://github.com/paravgupta10" target="_blank" aria-label="GitHub">
@@ -114,7 +117,7 @@
     }
 
     function isStrongPassword(password) {
-      const strongPattern = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+      const strongPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
       return strongPattern.test(password);
     }
 
@@ -129,7 +132,7 @@
       }
 
       if (!isStrongPassword(passwordInput.value)) {
-        showToast('Password must be 8+ chars including capital letter, a number, and special char!');
+        showToast('Password must be 8+ characters including at least one uppercase letter, one lowercase letter, one number, and one special character!');
         e.preventDefault();
         return false;
       }
@@ -149,7 +152,7 @@
       }
 
       if (!isStrongPassword(password)) {
-        showToast('Password must be 8+ chars including capital letter, a number, and special char!');
+        showToast('Password must be 8+ characters including at least one uppercase letter, one lowercase letter, one number, and one special character!');
         e.preventDefault();
         return false;
       }
@@ -168,6 +171,18 @@
       toast.textContent = message;
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    // New JavaScript function for password visibility toggle
+    function togglePasswordVisibility(id, iconElement) {
+      const input = document.getElementById(id);
+      if (input.type === 'password') {
+        input.type = 'text';
+        iconElement.innerHTML = '<i class="fa-solid fa-eye"></i>'; // Change to open eye
+      } else {
+        input.type = 'password';
+        iconElement.innerHTML = '<i class="fa-solid fa-eye-slash"></i>'; // Change back to crossed eye
+      }
     }
   </script>
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
