@@ -9,8 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div id="particles-js"></div>
   <div class="flash-toast" id="flash-toast"></div>
-
   {% with messages = get_flashed_messages() %}
   {% if messages %}
     <script>
@@ -170,5 +170,7 @@
       setTimeout(() => toast.classList.remove('show'), 4000);
     }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="static/js/particlesbg.js"></script>
 </body>
 </html>

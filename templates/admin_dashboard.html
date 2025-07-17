@@ -30,23 +30,33 @@
     </div>
     <div class="top-bar">
       <div class="card-box">
-        <h5>Total Vendors</h5>
+        <a href="{{ url_for('review_vendors') }}">Total Vendors</a>
+        <br>
+        <!-- <h5>Total Vendors</h5> -->
         <h3>{{ total_vendors }}</h3>
       </div>
       <div class="card-box">
-        <h5>Approved</h5>
+        <a href="{{ url_for('review_vendors') }}">Approved</a>
+        <br>
+        <!--<h5>Approved</h5> -->
         <h3>{{ approved_count }}</h3>
       </div>
       <div class="card-box">
-        <h5>Pending</h5>
+        <a href="{{ url_for('review_vendors') }}">Pending</a>
+        <br>
+        <!-- <h5>Pending</h5> -->
         <h3>{{ pending_count }}</h3>
       </div>
       <div class="card-box">
-        <h5>On Hold</h5>
+        <a href="{{ url_for('review_vendors') }}">On Hold</a>
+        <br>
+        <!--<h5>On Hold</h5> -->
         <h3>{{ hold_count }}</h3>
       </div>
       <div class="card-box">
-        <h5>Rejected</h5>
+        <a href="{{ url_for('review_vendors') }}">Rejected</a>
+        <br>
+        <!--<h5>Rejected</h5> -->
         <h3>{{ rejected_count }}</h3>
       </div>
     </div>

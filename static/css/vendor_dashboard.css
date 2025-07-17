@@ -104,7 +104,7 @@ body.loaded {
 .main-panel,
 .section-box {
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   margin: 0 auto 30px;
   text-align: center;
 }
@@ -176,10 +176,11 @@ th, td {
 .tab-button {
   background: var(--button-bg);
   color: white;
-  padding: 10px 20px;
+  padding: 18px 36px;
   border: none;
   border-radius: 8px;
   font-weight: bold;
+  font-size: 1.1rem;
   cursor: pointer;
   margin-top: 10px;
   transition: all 0.3s ease;
@@ -265,6 +266,22 @@ th, td {
 .toast.show {
   opacity: 1;
   transform: translateY(0);
+}
+
+#back-link-wrapper {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 10px 23px;
+  background-color: #425a3f;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+#back-link-wrapper:hover {
+  background-color: #2e3e2d;
 }
 
 @media (max-width: 768px) {

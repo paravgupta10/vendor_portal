@@ -46,6 +46,7 @@
         <p><strong>Phone:</strong> {{ vendor.phone }}</p>
         <p><strong>Country:</strong> {{ vendor.country }}</p>
       </div>
+      <a id="back-link-wrapper" href="{{ url_for('vendor_dashboard') }}">⬅ Back to Dashboard</a>
     </div>
 
     {% if vendor.status == 'approved' %}
@@ -57,6 +58,7 @@
         <br><br>
         <button type="submit" class="tab-button">Submit Invoice</button>
       </form>
+      <a id="back-link-wrapper" href="{{ url_for('vendor_dashboard') }}">⬅ Back to Dashboard</a>
     </div>
 
     <div id="reviewSection" class="section-box">
@@ -76,9 +78,9 @@
           {% for inv in invoices %}
           <tr>
             <td>{{ inv.file_name }}</td>
-            <td>{{ inv.uploaded_at.strftime('%Y-%m-%d') }}</td>
-            <td>{{ inv.status|capitalize }}</td>
+            <td>{{ inv.uploaded_at.strftime('%d-%m-%Y') }}</td>
             <td><a href="{{ inv.file_url }}" target="_blank">View</a></td>
+            <td>{{ inv.status|capitalize }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -87,6 +89,7 @@
       {% else %}
       <p>No invoices uploaded yet.</p>
       {% endif %}
+      <a id="back-link-wrapper" href="{{ url_for('vendor_dashboard') }}">⬅ Back to Dashboard</a>
     </div>
     {% else %}
     <div class="section-box" style="background: #fff3f3; color: #b94a48; text-align: center;">
@@ -108,10 +111,6 @@
         document.body.classList.add('loaded');
     });
 
-    /**
-     * Toggles the sidebar and adds a one-time event listener to the main
-     * content to close the sidebar when clicked.
-     */
     function toggleSidebar() {
       const sidebar = document.querySelector('.sidebar');
       sidebar.classList.toggle('active');
@@ -124,9 +123,6 @@
       }
     }
 
-    /**
-     * Helper function to close the sidebar and remove its own event listener.
-     */
     function collapseSidebarOnce() {
       const sidebar = document.querySelector('.sidebar');
       sidebar.classList.remove('active');
