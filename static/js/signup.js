@@ -1,3 +1,55 @@
+/**
+ * Displays a custom styled alert message.
+ * @param {string} message The message to display.
+ * @param {string} type The type of alert ('error', 'success'). Defaults to 'error'.
+ * @param {number} duration The duration in milliseconds before the alert fades out.
+ */
+function showAlert(message, type = 'error', duration = 4000) {
+  const alertBox = document.createElement('div');
+  alertBox.className = `custom-alert ${type}`;
+  alertBox.textContent = message;
+
+  const closeButton = document.createElement('span');
+  closeButton.className = 'close-btn';
+  closeButton.innerHTML = '&times;';
+  closeButton.onclick = () => {
+    alertBox.classList.add('hide');
+    alertBox.addEventListener('transitionend', () => alertBox.remove());
+  };
+  alertBox.appendChild(closeButton);
+
+  document.body.appendChild(alertBox);
+
+  setTimeout(() => alertBox.classList.add('show'), 10);
+
+  setTimeout(() => {
+    alertBox.classList.add('hide');
+    alertBox.addEventListener('transitionend', () => alertBox.remove());
+  }, duration);
+}
+
+// --- Initialize Counters and Event Listeners ---
+document.addEventListener('DOMContentLoaded', () => {
+  // Check for success messages flashed from the server
+  const flashedMessage = document.querySelector('.flashed-message');
+  if (flashedMessage) {
+    const message = flashedMessage.dataset.message;
+    const category = flashedMessage.dataset.category;
+    showAlert(message, category, 6000);
+  }
+  
+  showOwnershipFields();
+  
+  partnerCount = document.querySelectorAll('#partner-container .partner-block').length + 1;
+  LLPCount = document.querySelectorAll('#llp-container .partner-block').length + 1;
+  pvtDirectorCount = document.querySelectorAll('#pvtltd-container .director-block').length + 1;
+  directorCount = document.querySelectorAll('#publicltd-container .director-block').length + 1;
+  branchAddressCount = document.querySelectorAll('#branch-addresses .branch-group').length;
+});
+
+document.getElementById('ownership').addEventListener('change', showOwnershipFields);
+
+// --- Core Form Logic ---
 function showOwnershipFields() {
   const groups = document.querySelectorAll('.ownership-group');
   groups.forEach(group => {
@@ -20,34 +72,51 @@ function showOwnershipFields() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  showOwnershipFields(); // already called
+/**
+ * Checks if the last block in a container has all its inputs filled.
+ * @param {string} containerSelector - The CSS selector for the main container.
+ * @param {string} blockSelector - The CSS selector for the repeatable blocks within the container.
+ * @param {string} inputSelector - The CSS selector for inputs to check within a block.
+ */
+function isLastSectionFilled(containerSelector, blockSelector, inputSelector = 'input') {
+    const container = document.querySelector(containerSelector);
+    if (!container) return true;
 
-  // Initialize counts from DOM
-  partnerCount = document.querySelectorAll('#partner-container .partner-block').length + 1;
-  LLPCount = document.querySelectorAll('#llp-container .partner-block').length + 1;
-  pvtDirectorCount = document.querySelectorAll('#pvtltd-container .director-block').length + 1;
-  directorCount = document.querySelectorAll('#publicltd-container .director-block').length + 1;
+    const blocks = container.querySelectorAll(blockSelector);
+    if (blocks.length === 0) return true;
 
-});
-document.getElementById('ownership').addEventListener('change', showOwnershipFields);
+    const lastBlock = blocks[blocks.length - 1];
+    const inputs = lastBlock.querySelectorAll(inputSelector);
+    if (inputs.length === 0) return true;
 
-function isLastSectionFilled(containerSelector, inputSelector = 'input, textarea') {
-  const groups = document.querySelectorAll(containerSelector);
-  if (!groups.length) return true;
-  const lastGroup = groups[groups.length - 1];
-  return Array.from(lastGroup.querySelectorAll(inputSelector)).every(el => el.value.trim() !== '');
+    return Array.from(inputs).every(el => el.value.trim() !== '');
 }
 
-let branchAddressCount = 1;
+/**
+ * Generic function to remove the last added element from a container.
+ */
+function removeLastField(containerSelector, itemSelector, minItems) {
+  const container = document.querySelector(containerSelector);
+  if (!container) return false;
+
+  const items = container.querySelectorAll(itemSelector);
+  if (items.length > minItems) {
+    container.removeChild(items[items.length - 1]);
+    return true;
+  } else {
+    showAlert(`Cannot remove. A minimum of ${minItems} item(s) is required.`, 'error');
+    return false;
+  }
+}
+
+// --- Branch Address Functions ---
 function addBranchAddress() {
-  if (!isLastSectionFilled('#branch-addresses .branch-group')) {
-    alert("Please fill the last branch address fields before adding a new one.");
+  if (!isLastSectionFilled('#branch-addresses', '.branch-group', 'textarea, input')) {
+    showAlert("Please fill the last branch address before adding a new one.");
     return;
   }
   branchAddressCount++;
   const container = document.getElementById('branch-addresses');
-
   const groupWrapper = document.createElement('div');
   groupWrapper.className = 'branch-group';
   groupWrapper.innerHTML = `
@@ -66,79 +135,84 @@ function addBranchAddress() {
     <div class="input-group">
       <label for="bcountry_${branchAddressCount}">Country</label>
       <input type="text" id="bcountry_${branchAddressCount}" name="bcountry[]" maxlength="30" placeholder="Enter your branch country"/>
-    </div>
-  `;
+    </div>`;
   container.appendChild(groupWrapper);
 }
 
+function removeBranchAddress() {
+  if (removeLastField('#branch-addresses', '.branch-group', 1)) {
+    branchAddressCount--;
+  }
+}
+
+// --- Entity (Partner/Director) Functions ---
 function addEntity(containerId, countVarName, label, namePrefix) {
-  if (!isLastSectionFilled(`#${containerId} .input-group`)) {
-    alert(`Please complete the last ${label.toLowerCase()} details before adding a new one.`);
+  const blockSelector = containerId.includes("director") ? '.director-block' : '.partner-block';
+  if (!isLastSectionFilled(`#${containerId}`, blockSelector)) {
+    showAlert(`Please complete the last ${label.toLowerCase()} details before adding a new one.`);
     return;
   }
-
   const container = document.getElementById(containerId);
   if (!container) return;
-
-  // Ensure counter is initialized
-  window[countVarName] = window[countVarName] || 1;
-
-  const count = window[countVarName]; // Use current count for labeling
-
+  const count = window[countVarName];
   const wrapper = document.createElement('div');
-  wrapper.classList.add(containerId.includes("director") ? 'director-block' : 'partner-block');
+  wrapper.className = blockSelector.substring(1);
   wrapper.innerHTML = `
     <h4>${label} ${count} Details</h4>
     <div class="input-group"><label>Name</label><input type="text" name="${namePrefix}${count}_name" maxlength="100"></div>
     <div class="input-group"><label>Email</label><input type="email" name="${namePrefix}${count}_email" maxlength="100"></div>
     <div class="input-group"><label>Phone</label><input type="tel" name="${namePrefix}${count}_phone" maxlength="10" pattern="\\d{10}" title="Please enter exactly 10 digits"></div>
-    <div class="input-group"><label>PAN Number</label><input type="text" name="${namePrefix}${count}_pan" maxlength="10"></div>
-  `;
+    <div class="input-group"><label>PAN Number</label><input type="text" name="${namePrefix}${count}_pan" maxlength="10"></div>`;
   container.appendChild(wrapper);
-
-  window[countVarName]++; // Increment after using
+  window[countVarName]++;
 }
 
+function removeEntity(containerId, countVarName, minItems) {
+  const itemSelector = containerId.includes("director") ? '.director-block' : '.partner-block';
+  if (removeLastField(`#${containerId}`, itemSelector, minItems)) {
+    window[countVarName]--;
+  }
+}
+
+// CORRECTED: Prefixes now match the backend Python code
+function addPartner()     { addEntity('partner-container', 'partnerCount', 'Partner', 'partner'); }
+function removePartner()  { removeEntity('partner-container', 'partnerCount', 2); }
+
+function addLLP()         { addEntity('llp-container', 'LLPCount', 'Partner', 'partner'); }
+function removeLLP()      { removeEntity('llp-container', 'LLPCount', 2); }
+
+function addPvtDirector() { addEntity('pvtltd-container', 'pvtDirectorCount', 'Director', 'director'); }
+function removePvtDirector(){ removeEntity('pvtltd-container', 'pvtDirectorCount', 2); }
+
+function addPubDirector() { addEntity('publicltd-container', 'directorCount', 'Director', 'dir'); }
+function removePubDirector(){ removeEntity('publicltd-container', 'directorCount', 3); }
 
 
-function addPartner()       { addEntity('partner-container', 'partnerCount', 'Partner', 'partner'); }
-function addLLP()           { addEntity('llp-container', 'LLPCount', 'Partner', 'partner'); }
-function addPvtDirector()   { addEntity('pvtltd-container', 'pvtDirectorCount', 'Director', 'director'); }
-function addPubDirector()   { addEntity('publicltd-container', 'directorCount', 'Director', 'dir'); }
-
+// --- Product/Service Functions ---
 function addProductField() {
-  if (!isLastSectionFilled('#product-services-container .input-group')) {
-    alert("Please complete the last product/service field before adding a new one.");
+  if (!isLastSectionFilled('#product-services-container', '.input-group')) {
+    showAlert("Please complete the last product/service field before adding a new one.");
     return;
   }
-
   const container = document.getElementById('product-services-container');
-  const count = container.querySelectorAll('input').length + 1;
-
+  const count = container.querySelectorAll('.input-group').length + 1;
   const inputGroup = document.createElement('div');
   inputGroup.className = 'input-group';
-
-  const label = document.createElement('label');
-  label.setAttribute('for', `product_${count}`);
-  label.innerText = `Product/Service ${count}`;
-
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.name = 'products[]';
-  input.id = `product_${count}`;
-  input.placeholder = 'Enter product or service';
-  input.required = true;
-  input.maxLength = 100;
-
-  inputGroup.appendChild(label);
-  inputGroup.appendChild(input);
+  inputGroup.innerHTML = `
+    <label for="product_${count}">Product/Service ${count}</label>
+    <input type="text" name="products[]" id="product_${count}" placeholder="Enter product or service" required maxlength="100">`;
   container.appendChild(inputGroup);
 }
 
+function removeProductField() {
+  removeLastField('#product-services-container', '.input-group', 3);
+}
+
+// --- Form Validation ---
 function validateFormat(id, pattern, message) {
   const input = document.getElementById(id);
-  if (input && !new RegExp(pattern).test(input.value)) {
-    alert(message);
+  if (input && input.value && !new RegExp(pattern).test(input.value)) {
+    showAlert(message);
     input.focus();
     return false;
   }
@@ -148,23 +222,19 @@ function validateFormat(id, pattern, message) {
 function validateFileInput(id, errorId) {
   const fileInput = document.getElementById(id);
   const errorMsg = document.getElementById(errorId);
-
   if (!fileInput.files.length) {
-    alert(`Please upload a file for ${id}.`);
-    fileInput.focus();
-    return false;
+    return true; 
   }
-
   const file = fileInput.files[0];
   const validTypes = ['application/pdf', 'image/jpeg'];
-
   if (!validTypes.includes(file.type)) {
-    alert(`Invalid file type for ${id}. Please upload PDF or JPEG.`);
+    showAlert(`Invalid file type for ${id}. Please upload PDF or JPEG.`, 'error');
+    fileInput.value = "";
     fileInput.focus();
     return false;
   }
-
-  if (file.size > 2 * 1024 * 1024) {
+  if (file.size > 2 * 1024 * 1024) { // 2MB limit
+    showAlert(`File for ${id} is too large. Maximum size is 2MB.`, 'error');
     errorMsg.style.display = "inline";
     fileInput.value = "";
     fileInput.focus();
@@ -172,7 +242,6 @@ function validateFileInput(id, errorId) {
   } else {
     errorMsg.style.display = "none";
   }
-
   return true;
 }
 
@@ -194,17 +263,33 @@ fileValidations.forEach(({ id, errorId }) => {
 document.querySelector('form').addEventListener('submit', function (e) {
   const ownership = document.getElementById('ownership').value;
   if (!ownership) {
-    alert('Please select an ownership type.');
     e.preventDefault();
+    showAlert('Please select an ownership type.');
     return;
   }
-
-  const isValidTAN = validateFormat('tan_number', '^[A-Z]{4}[0-9]{5}[A-Z]$', 'Invalid TAN format');
-  const isValidGST = validateFormat('gst_number', '^\\d{2}[A-Z]{5}\\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$', 'Invalid GST format');
-  const isValidPhone = validateFormat('phone', '^[6-9][0-9]{9}$', 'Invalid phone number format');
-  const areFilesValid = fileValidations.every(({ id, errorId }) => validateFileInput(id, errorId));
-
-  if (!(isValidTAN && isValidGST && isValidPhone && areFilesValid)) {
-    e.preventDefault();
-  }
+  const runValidations = (...validations) => {
+    for (const validation of validations) {
+      if (!validation.check()) {
+        e.preventDefault();
+        return false;
+      }
+    }
+    return true;
+  };
+  runValidations(
+    { check: () => validateFormat('tan_number', '^[A-Z]{4}[0-9]{5}[A-Z]$', 'Invalid TAN format') },
+    { check: () => validateFormat('gst_number', '^\\d{2}[A-Z]{5}\\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$', 'Invalid GST format') },
+    { check: () => validateFormat('phone', '^[6-9][0-9]{9}$', 'Invalid phone number format') },
+    ...fileValidations.map(fv => ({
+      check: () => {
+        const input = document.getElementById(fv.id);
+        if (input.required && !input.files.length) {
+          showAlert(`Please upload the required file for ${fv.id}.`, 'error');
+          input.focus();
+          return false;
+        }
+        return validateFileInput(fv.id, fv.errorId);
+      }
+    }))
+  );
 });

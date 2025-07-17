@@ -5,7 +5,7 @@
   <title>Vendor Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/static/css/vendor_dashboard.css" />
-  
+
 </head>
 <body>
 
@@ -49,8 +49,9 @@
       <a id="back-link-wrapper" href="{{ url_for('vendor_dashboard') }}">⬅ Back to Dashboard</a>
     </div>
 
+    {# --- Approved Only Upload Section --- #}
     {% if vendor.status == 'approved' %}
-    <div id="uploadSection" class="section-box">
+    <div id="uploadApprovedSection" class="section-box">
       <h3>Upload Invoice</h3><br>
       <p>Please upload your invoice in JPEG format.</p><br>
       <form action="{{ url_for('upload_invoice') }}" method="POST" enctype="multipart/form-data">
@@ -60,8 +61,11 @@
       </form>
       <a id="back-link-wrapper" href="{{ url_for('vendor_dashboard') }}">⬅ Back to Dashboard</a>
     </div>
+    {% endif %}
 
-    <div id="reviewSection" class="section-box">
+    {# --- Approved Only Review Section --- #}
+    {% if vendor.status == 'approved' %}
+    <div id="reviewApprovedSection" class="section-box">
       <h3>Your Uploaded Invoices</h3>
       {% if invoices %}
       <div class="table-wrapper">
@@ -79,8 +83,8 @@
           <tr>
             <td>{{ inv.file_name }}</td>
             <td>{{ inv.uploaded_at.strftime('%d-%m-%Y') }}</td>
-            <td><a href="{{ inv.file_url }}" target="_blank">View</a></td>
             <td>{{ inv.status|capitalize }}</td>
+            <td><a href="{{ inv.file_url }}" target="_blank">View</a></td>
           </tr>
           {% endfor %}
         </tbody>
@@ -91,17 +95,20 @@
       {% endif %}
       <a id="back-link-wrapper" href="{{ url_for('vendor_dashboard') }}">⬅ Back to Dashboard</a>
     </div>
-    {% else %}
-    <div class="section-box" style="background: #fff3f3; color: #b94a48; text-align: center;">
-      <h3>Invoice Upload Unavailable</h3>
-      <p>You can upload invoices only after your registration has been <strong>approved</strong>.</p>
-    </div>
     {% endif %}
+
+    {# --- Unavailable Message Section (Always Present, Hidden by Default) --- #}
+    <div id="featureUnavailableSection" class="section-box feature-unavailable-message">
+      <h3>Feature Not Available</h3>
+      <p>This feature is only available when your registration status is <strong>Approved</strong>.</p>
+      <p>Current status: <strong>{{ vendor.status|capitalize }}</strong></p>
+      <a id="back-link-wrapper" href="{{ url_for('vendor_dashboard') }}">⬅ Back to Dashboard</a>
+    </div>
 
     <div class="footer-contact">
       <p>For any queries please contact Admin (admin1@example.com)</p>
     </div>
-    
+
   </div>
 
   <div id="toast" class="toast">Invoice uploaded successfully.</div>
@@ -109,6 +116,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.body.classList.add('loaded');
+        showSection('welcome'); // Ensure welcome section is shown on load
     });
 
     function toggleSidebar() {
@@ -131,17 +139,33 @@
       mainContent.removeEventListener('click', collapseSidebarOnce);
     }
 
-    function showSection(section) {
+    function showSection(sectionType) {
         const sections = document.querySelectorAll('.section-box');
         sections.forEach(s => {
-            if (s.id !== 'welcomeSection') {
-                s.classList.remove('show');
-            }
+            s.classList.remove('show');
         });
-        
-        const selected = document.getElementById(section + 'Section');
-        if (selected) {
-            selected.classList.add('show');
+
+        // Get vendor status from a data attribute or directly from Flask context if available globally
+        // For simplicity, let's assume `vendorStatus` is available globally from Flask
+        // Or, you can pass it from Flask using a hidden input or data attribute on body
+        const vendorStatus = "{{ vendor.status }}"; // Accessing Jinja2 variable in JS
+
+        let targetSectionId;
+        if (sectionType === 'details') {
+            targetSectionId = 'detailsSection';
+        } else if (sectionType === 'upload' || sectionType === 'review') {
+            if (vendorStatus === 'approved') {
+                targetSectionId = sectionType + 'ApprovedSection';
+            } else {
+                targetSectionId = 'featureUnavailableSection';
+            }
+        } else { // Default to welcome if unknown sectionType
+            targetSectionId = 'welcomeSection';
+        }
+
+        const selectedSection = document.getElementById(targetSectionId);
+        if (selectedSection) {
+            selectedSection.classList.add('show');
         }
 
         if (window.innerWidth <= 768) {

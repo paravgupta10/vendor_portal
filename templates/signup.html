@@ -4,13 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vendor Registration Portal - Vendor Details</title>
-  <link rel="stylesheet" href="static/css/styles2.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles2.css') }}" />
 </head>
 <body>
   <a href="/logout" class="btn-logout">Logout</a>
   <div class="container">
     <header class="top-text">
-
       <h1>Submit Vendor Details</h1>
       <p>Welcome, {{ session['email'] }}!</p>
       <p>As a vendor, you can register your company and provide necessary details to get started.</p>
@@ -22,322 +21,314 @@
     </header>
 
     <main class="signup-container">
-
       <form action="/signup" method="POST" enctype="multipart/form-data">
-      <div class="form-section">
-        <!-- Company details section -->
-        <h3>Company Information</h3>
-        <div class="input-group">
-          <label for="company_name" class="required-label">Company Name</label>
-          <input type="text" id="company_name" name="company_name" placeholder="Enter your company name"  required maxlength="50"/>
-        </div>
-
-        <div class="input-group">
-          <label for="ownership" class="required-label">Type of Ownership</label>
-          <select id="ownership" name="ownership"  required onchange="showOwnershipFields()">
-            <option value="">Select type</option>
-            <option value="sole">Sole Proprietorship</option>
-            <option value="publicltd">Public Limited Company</option>
-            <option value="pvtltd">Private Limited Company</option>
-            <option value="partnership">Partnership</option>
-            <option value="llp">Limited Liability Partnership (LLP)</option>
-            <option value="trust">Trust</option>
-            <option value="ngo">NGO</option>
-          </select>
-        </div>
-        
-        <div class="input-group">
-          <label for="address" class="required-label">Address of Registered office</label>
-          <textarea id="address" name="address" placeholder="Enter your registered office address"  required maxlength="80"></textarea>
-          <small>(Max 80 characters)</small>
-        </div>
-
-        <div class="input-group">
-          <label for="city" class="required-label">City</label>
-          <input type="text" id="city" name="city" placeholder="Enter your regd office city"   required maxlength="30"/>
-        </div>
-
-        <div class="input-group">
-          <label for="state" class="required-label">State</label>
-          <input type="text" id="state" name="state" placeholder="Enter your regd office state"  required maxlength="30"/>
-        </div>
-
-        <div class="input-group">
-          <label for="country" class="required-label">Country</label>
-          <input type="text" id="country" name="country" placeholder="Enter your regd office country"  required maxlength="30"/>
-        </div>
-
-        
-        <div id="branch-addresses">
+        <div class="form-section">
+          <h2>Company Information</h2>
+          <br>
           <div class="input-group">
-            <label for="baddress_1">Address of Branch Office</label>
-            <textarea id="baddress_1" name="baddress[]" placeholder="Enter your branch address" maxlength="80"></textarea>
+            <label for="company_name" class="required-label">Company Name</label>
+            <input type="text" id="company_name" name="company_name" placeholder="Enter your company name" required maxlength="50"/>
+          </div>
+
+          <div class="input-group">
+            <label for="ownership" class="required-label">Type of Ownership</label>
+            <select id="ownership" name="ownership" required onchange="showOwnershipFields()">
+              <option value="">Select type</option>
+              <option value="sole">Sole Proprietorship</option>
+              <option value="publicltd">Public Limited Company</option>
+              <option value="pvtltd">Private Limited Company</option>
+              <option value="partnership">Partnership</option>
+              <option value="llp">Limited Liability Partnership (LLP)</option>
+              <option value="trust">Trust</option>
+              <option value="ngo">NGO</option>
+            </select>
+          </div>
+          
+          <div class="input-group">
+            <label for="address" class="required-label">Address of Registered office</label>
+            <textarea id="address" name="address" placeholder="Enter your registered office address" required maxlength="80"></textarea>
             <small>(Max 80 characters)</small>
           </div>
 
           <div class="input-group">
-            <label for="city">City</label>
-            <input type="text" id="city" name="city" placeholder="Enter your branch office city" maxlength="30"/>
+            <label for="city" class="required-label">City</label>
+            <input type="text" id="city" name="city" placeholder="Enter your regd office city" required maxlength="30"/>
           </div>
 
           <div class="input-group">
-            <label for="state">State</label>
-            <input type="text" id="state" name="state" placeholder="Enter your branch office state" maxlength="30"/>
+            <label for="state" class="required-label">State</label>
+            <input type="text" id="state" name="state" placeholder="Enter your regd office state" required maxlength="30"/>
           </div>
 
           <div class="input-group">
-            <label for="country">Country</label>
-            <input type="text" id="country" name="country" placeholder="Enter your branch office country" maxlength="30"/>
+            <label for="country" class="required-label">Country</label>
+            <input type="text" id="country" name="country" placeholder="Enter your regd office country" required maxlength="30"/>
           </div>
-        </div>
 
-        <button type="button" onclick="addBranchAddress()">+ Add Another Branch Address</button>
-        <br>
-        <br>
-        <div class="input-group">
-          <label for="phone" class="required-label">Company Phone Number</label>
-          <input type="text" id="phone" name="phone" placeholder="Enter your phone number"  required maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"/>
-        </div>
-
-        <div class="input-group">
-          <label for="website" class="required-label">Website URL</label>
-          <input type="text" id="website" name="website" placeholder="Enter your website URL"  required maxlength="30"
-            pattern="^(https?:\/\/)?([\w\-]+\.)+[\w\-]{2,}(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$"
-            title="Enter a valid website URL like youtube.com or https://example.com"
-          />
-        </div>
-
-
-        <!-- Sole Fields -->
-        <div id="sole-fields" class="ownership-group" hidden>
-          <h4>Proprietor Details</h4>
-          <div class="input-group"><label>Full Name</label><input type="text" name="sole_name" maxlength="60"></div>
-          <div class="input-group"><label>Email</label><input type="email" name="sole_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
-          <div class="input-group"><label>Phone</label><input type="tel" name="sole_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits" ></div>
-          <div class="input-group"><label>PAN Number</label><input type="text" name="sole_pan"  placeholder="AAAAA0000A"  pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
-            Format: 5 capital letters, 4 digits, 1 capital letter 
-          </small>
-          </div>
-        </div>
-
-        <!-- Partnership Fields -->
-        <div id="partnership-fields" class="ownership-group" hidden>
-          <div id="partner-container">
-            <!-- Partner 1 -->
-            <div class="partner-block">
-              <h4>Partner 1 Details</h4>
-              <div class="input-group"><label>Full Name</label><input type="text" name="partner1_name" maxlength="60"></div>
-              <div class="input-group"><label>Email</label><input type="email" name="partner1_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
-              <div class="input-group"><label>Phone</label><input type="tel" name="partner1_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
-              <div class="input-group"><label>PAN Number</label><input type="text" name="partner1_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
-            Format: 5 capital letters, 4 digits, 1 capital letter
-          </small>
-          </div>
-            </div>
-
-            <!-- Partner 2 -->
-            <div class="partner-block">
-              <h4>Partner 2 Details</h4>
-              <div class="input-group"><label>Full Name</label><input type="text" name="partner2_name" maxlength="60"></div>
-              <div class="input-group"><label>Email</label><input type="email" name="partner2_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
-              <div class="input-group"><label>Phone</label><input type="tel" name="partner2_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
-              <div class="input-group"><label>PAN Number</label><input type="text" name="partner2_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
-              Format: 5 capital letters, 4 digits, 1 capital letter
-            </small>
-            </div>
-            </div>
-          </div>
-          <button type="button" onclick="addPartner()">+ Add Another Partner</button>
-        </div>
-
-        <!-- LLP Fields -->
-        <div id="llp-fields" class="ownership-group" hidden>
-          <div id="llp-container">
-            <div class="partner-block">
-              <h4>Partner 1 Details</h4>
-              <div class="input-group"><label>Full Name</label><input type="text" name="partner1_name" maxlength="60"></div>
-              <div class="input-group"><label>Email</label><input type="email" name="partner1_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
-              <div class="input-group"><label>Phone</label><input type="tel" name="partner1_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
-              <div class="input-group"><label>PAN Number</label><input type="text" name="partner1_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
-              Format: 5 capital letters, 4 digits, 1 capital letter
-            </small>
-            </div>
-            </div>
-
-            <div class="partner-block">
-              <h4>Partner 2 Details</h4>
-              <div class="input-group"><label>Full Name</label><input type="text" name="partner2_name" maxlength="60"></div>
-              <div class="input-group"><label>Email</label><input type="email" name="partner2_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
-              <div class="input-group"><label>Phone</label><input type="tel" name="partner2_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
-              <div class="input-group"><label>PAN Number</label><input type="text" name="partner2_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10">
-                <small style="color: #555;">
-                  Format: 5 capital letters, 4 digits, 1 capital letter
-                </small>
-                </div>
-            </div>
-          </div>
-          <button type="button" onclick="addLLP()">+ Add Another Partner</button>
-        </div>
-
-        <!-- Pvt Ltd Fields -->
-        <div id="pvtltd-fields" class="ownership-group" hidden>
-          <div id="pvtltd-container">
-            <div class="director-block">
-              <h4>Director 1 Details</h4>
-              <div class="input-group"><label>Full Name</label><input type="text" name="director1_name" maxlength="60"></div>
-              <div class="input-group"><label>Email</label><input type="email" name="director1_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
-              <div class="input-group"><label>Phone</label><input type="tel" name="director1_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
-              <div class="input-group"><label>PAN Number</label><input type="text" name="director1_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
-          Format: 5 capital letters, 4 digits, 1 capital letter
-        </small>
-        </div>
-            </div>
-
-            <div class="director-block">
-              <h4>Director 2 Details</h4>
-              <div class="input-group"><label>Full Name</label><input type="text" name="director2_name" maxlength="60"></div>
-              <div class="input-group"><label>Email</label><input type="email" name="director2_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
-              <div class="input-group"><label>Phone</label><input type="tel" name="director2_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
-              <div class="input-group"><label>PAN Number</label><input type="text" name="director2_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
-            Format: 5 capital letters, 4 digits, 1 capital letter
-          </small>
-          </div>
-            </div>
-          </div>
-          <button type="button" onclick="addPvtDirector()">+ Add Another Director</button>
-        </div>
-
-        <!-- Public Ltd Fields -->
-        <div id="publicltd-fields" class="ownership-group" hidden>
-          <div id="publicltd-container">
-            <div class="director-block">
-              <h4>Director 1 Details</h4>
-              <div class="input-group"><label>Full Name</label><input type="text" name="dir1_name" maxlength="60"></div>
-              <div class="input-group"><label>Email</label><input type="email" name="dir1_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
-              <div class="input-group"><label>Phone</label><input type="tel" name="dir1_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
-              <div class="input-group"><label>PAN</label><input type="text" name="dir1_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
-            Format: 5 capital letters, 4 digits, 1 capital letter
-          </small>
-          </div>
-            </div>
-
-            <div class="director-block">
-              <h4>Director 2 Details</h4>
-              <div class="input-group"><label>Full Name</label><input type="text" name="dir2_name" maxlength="60"></div>
-              <div class="input-group"><label>Email</label><input type="email" name="dir2_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
-              <div class="input-group"><label>Phone</label><input type="tel" name="dir2_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
-              <div class="input-group"><label>PAN</label><input type="text" name="dir2_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
-              Format: 5 capital letters, 4 digits, 1 capital letter
-            </small>
-            </div>
-            </div>
-
-            <div class="director-block">
-              <h4>Director 3 Details</h4>
-              <div class="input-group"><label>Full Name</label><input type="text" name="dir3_name" maxlength="60"></div>
-              <div class="input-group"><label>Email</label><input type="email" name="dir3_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
-              <div class="input-group"><label>Phone</label><input type="tel" name="dir3_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
-              <div class="input-group"><label>PAN</label><input type="text" name="dir3_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
-                Format: 5 capital letters, 4 digits, 1 capital letter
-              </small>
+          
+          <div id="branch-addresses">
+            <div class="branch-group">
+              <div class="input-group">
+                <label for="baddress_1">Address of Branch Office 1</label>
+                <textarea id="baddress_1" name="baddress[]" placeholder="Enter your branch address" maxlength="80"></textarea>
+                <small>(Max 80 characters)</small>
+              </div>
+              <div class="input-group">
+                <label for="bcity_1">City</label>
+                <input type="text" id="bcity_1" name="bcity[]" placeholder="Enter your branch office city" maxlength="30"/>
+              </div>
+              <div class="input-group">
+                <label for="bstate_1">State</label>
+                <input type="text" id="bstate_1" name="bstate[]" placeholder="Enter your branch office state" maxlength="30"/>
+              </div>
+              <div class="input-group">
+                <label for="bcountry_1">Country</label>
+                <input type="text" id="bcountry_1" name="bcountry[]" placeholder="Enter your branch office country" maxlength="30"/>
               </div>
             </div>
           </div>
-          <button type="button" onclick="addPubDirector()">+ Add Another Director</button>
-        </div>
-      </div>
 
+          <div class="button-group">
+            <button type="button" onclick="addBranchAddress()">+ Add Branch</button>
+            <button type="button" onclick="removeBranchAddress()" class="btn-remove">- Remove</button>
+          </div>
 
-        <!-- Financial section -->
-          <div class="form-section">
-            <h3>Financial Information</h3>
+          <div class="input-group">
+            <label for="phone" class="required-label">Company Phone Number</label>
+            <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"/>
+          </div>
 
-            <div class="input-group">
-              <label for="tan_number" class="required-label">TAN Number</label>
-              <input type="text" id="tan_number"  required name="tan_number" placeholder="AAAA00000A" 
-              pattern="[A-Z]{4}[0-9]{5}[A-Z]{1}" title="TAN must be 10 characters: 4 letters, 5 digits, 1 letter" maxlength="10">
-              <small style="color: #555;">
-                Format: 4 capital letters, 5 numbers, 1 capital letter
-              </small>
-            </div>
+          <div class="input-group">
+            <label for="website" class="required-label">Website URL</label>
+            <input type="text" id="website" name="website" placeholder="Enter your website URL" required maxlength="30"
+              pattern="^(https?:\/\/)?([\w\-]+\.)+[\w\-]{2,}(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$"
+              title="Enter a valid website URL like youtube.com or https://example.com"
+            />
+          </div>
 
-            <div class="input-group">
-              <label for="tan_proof" class="required-label">Upload TAN Proof (PDF/JPEG only) (Max 2MB)</label>
-              <input type="file" id="tan_proof"  required name="tan_proof" accept=".pdf,image/jpeg" >
-              <small id="tan_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
-            </div>
-
-            <div class="input-group">
-              <label for="gst_number" class="required-label">GST Number</label>
-              <input type="text" id="gst_number"  required name="gst_number" placeholder="00AAAAA0000A0A0" 
-              pattern="^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$"
-              title="GST must be a 15-character alphanumeric code" maxlength="15">
-              <small style="color: #555;">
-                Format: 15 characters(e.g. 27ABCDE1234F1Z5)
-              </small>
-
-            </div>
-
-            <div class="input-group">
-              <label for="gst_proof" class="required-label">Upload GST Proof (PDF/JPEG only) (Max 2MB)</label>
-              <input type="file" id="gst_proof"  required name="gst_proof" accept=".pdf,image/jpeg" >
-              <small id="gst_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
-
-            </div>
-
-            <div class="input-group">
-              <label for="turnover" class="required-label">Turnover (in cr)</label>
-              <input type="number" step="0.01"  required id="turnover" name="turnover" placeholder="Enter turnover in crores" min="0" max="1000">
-            </div>
-            <p>Upload last three years Balance Sheet(Recent first)</p>
-            <div class="input-group">
-              <label for="bs_year1" class="required-label">Upload Balance Sheet(Year1) (PDF/JPEG only) (Max 2MB)</label>
-              <input type="file" id="bs_year1"  required name="bs_year1" accept=".pdf,image/jpeg">
-              <small id="bs1_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
-            </div>
-
-            <div class="input-group">
-              <label for="bs_year2" class="required-label">Upload Balance Sheet(Year 2) (PDF/JPEG only) (Max 2MB)</label>
-              <input type="file" id="bs_year2"  required name="bs_year2" accept=".pdf,image/jpeg">
-              <small id="bs2_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
-            </div>
-
-            <div class="input-group"> 
-              <label for="bs_year3" class="required-label">Upload Balance Sheet(Year 3) (PDF/JPEG only) (Max 2MB)</label>
-              <input type="file" id="bs_year3"  required name="bs_year3" accept=".pdf,image/jpeg">
-              <small id="bs3_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
-
+          <div id="sole-fields" class="ownership-group" hidden>
+            <h4>Proprietor Details</h4>
+            <div class="input-group"><label>Full Name</label><input type="text" name="sole_name" maxlength="60"></div>
+            <div class="input-group"><label>Email</label><input type="email" name="sole_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
+            <div class="input-group"><label>Phone</label><input type="tel" name="sole_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits" ></div>
+            <div class="input-group"><label>PAN Number</label><input type="text" name="sole_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
+              Format: 5 capital letters, 4 digits, 1 capital letter 
+            </small>
             </div>
           </div>
 
+          <div id="partnership-fields" class="ownership-group" hidden>
+            <div id="partner-container">
+              <div class="partner-block">
+                <h4>Partner 1 Details</h4>
+                <div class="input-group"><label>Full Name</label><input type="text" name="partner1_name" maxlength="60"></div>
+                <div class="input-group"><label>Email</label><input type="email" name="partner1_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
+                <div class="input-group"><label>Phone</label><input type="tel" name="partner1_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+                <div class="input-group"><label>PAN Number</label><input type="text" name="partner1_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
+                  Format: 5 capital letters, 4 digits, 1 capital letter
+                </small>
+                </div>
+              </div>
+              <div class="partner-block">
+                <h4>Partner 2 Details</h4>
+                <div class="input-group"><label>Full Name</label><input type="text" name="partner2_name" maxlength="60"></div>
+                <div class="input-group"><label>Email</label><input type="email" name="partner2_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
+                <div class="input-group"><label>Phone</label><input type="tel" name="partner2_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+                <div class="input-group"><label>PAN Number</label><input type="text" name="partner2_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
+                Format: 5 capital letters, 4 digits, 1 capital letter
+              </small>
+              </div>
+              </div>
+            </div>
+            <div class="button-group">
+                <button type="button" onclick="addPartner()">+ Add Partner</button>
+                <button type="button" onclick="removePartner()" class="btn-remove">- Remove</button>
+            </div>
+          </div>
 
-        <!-- Products and Services section -->
-         <div class="form-section">
-          <h3>Products & Services Offered</h3>
+          <div id="llp-fields" class="ownership-group" hidden>
+            <div id="llp-container">
+              <div class="partner-block">
+                <h4>Partner 1 Details</h4>
+                <div class="input-group"><label>Full Name</label><input type="text" name="partner1_name" maxlength="60"></div>
+                <div class="input-group"><label>Email</label><input type="email" name="partner1_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
+                <div class="input-group"><label>Phone</label><input type="tel" name="partner1_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+                <div class="input-group"><label>PAN Number</label><input type="text" name="partner1_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
+                Format: 5 capital letters, 4 digits, 1 capital letter
+              </small>
+              </div>
+              </div>
+              <div class="partner-block">
+                <h4>Partner 2 Details</h4>
+                <div class="input-group"><label>Full Name</label><input type="text" name="partner2_name" maxlength="60"></div>
+                <div class="input-group"><label>Email</label><input type="email" name="partner2_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
+                <div class="input-group"><label>Phone</label><input type="tel" name="partner2_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+                <div class="input-group"><label>PAN Number</label><input type="text" name="partner2_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10">
+                  <small style="color: #555;">
+                    Format: 5 capital letters, 4 digits, 1 capital letter
+                  </small>
+                  </div>
+              </div>
+            </div>
+            <div class="button-group">
+                <button type="button" onclick="addLLP()">+ Add Partner</button>
+                <button type="button" onclick="removeLLP()" class="btn-remove">- Remove</button>
+            </div>
+          </div>
+
+          <div id="pvtltd-fields" class="ownership-group" hidden>
+            <div id="pvtltd-container">
+              <div class="director-block">
+                <h4>Director 1 Details</h4>
+                <div class="input-group"><label>Full Name</label><input type="text" name="director1_name" maxlength="60"></div>
+                <div class="input-group"><label>Email</label><input type="email" name="director1_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
+                <div class="input-group"><label>Phone</label><input type="tel" name="director1_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+                <div class="input-group"><label>PAN Number</label><input type="text" name="director1_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
+            Format: 5 capital letters, 4 digits, 1 capital letter
+          </small>
+          </div>
+              </div>
+              <div class="director-block">
+                <h4>Director 2 Details</h4>
+                <div class="input-group"><label>Full Name</label><input type="text" name="director2_name" maxlength="60"></div>
+                <div class="input-group"><label>Email</label><input type="email" name="director2_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
+                <div class="input-group"><label>Phone</label><input type="tel" name="director2_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+                <div class="input-group"><label>PAN Number</label><input type="text" name="director2_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
+              Format: 5 capital letters, 4 digits, 1 capital letter
+            </small>
+            </div>
+              </div>
+            </div>
+            <div class="button-group">
+                <button type="button" onclick="addPvtDirector()">+ Add Director</button>
+                <button type="button" onclick="removePvtDirector()" class="btn-remove">- Remove</button>
+            </div>
+          </div>
+
+          <div id="publicltd-fields" class="ownership-group" hidden>
+            <div id="publicltd-container">
+              <div class="director-block">
+                <h4>Director 1 Details</h4>
+                <div class="input-group"><label>Full Name</label><input type="text" name="dir1_name" maxlength="60"></div>
+                <div class="input-group"><label>Email</label><input type="email" name="dir1_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
+                <div class="input-group"><label>Phone</label><input type="tel" name="dir1_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+                <div class="input-group"><label>PAN</label><input type="text" name="dir1_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
+              Format: 5 capital letters, 4 digits, 1 capital letter
+            </small>
+            </div>
+              </div>
+              <div class="director-block">
+                <h4>Director 2 Details</h4>
+                <div class="input-group"><label>Full Name</label><input type="text" name="dir2_name" maxlength="60"></div>
+                <div class="input-group"><label>Email</label><input type="email" name="dir2_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
+                <div class="input-group"><label>Phone</label><input type="tel" name="dir2_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+                <div class="input-group"><label>PAN</label><input type="text" name="dir2_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
+                Format: 5 capital letters, 4 digits, 1 capital letter
+              </small>
+              </div>
+              </div>
+              <div class="director-block">
+                <h4>Director 3 Details</h4>
+                <div class="input-group"><label>Full Name</label><input type="text" name="dir3_name" maxlength="60"></div>
+                <div class="input-group"><label>Email</label><input type="email" name="dir3_email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" maxlength="50"></div>
+                <div class="input-group"><label>Phone</label><input type="tel" name="dir3_phone" maxlength="10" pattern="\d{10}" title="Please enter exactly 10 digits"></div>
+                <div class="input-group"><label>PAN</label><input type="text" name="dir3_pan" placeholder="AAAAA0000A" pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"><small style="color: #555;">
+                  Format: 5 capital letters, 4 digits, 1 capital letter
+                </small>
+                </div>
+              </div>
+            </div>
+            <div class="button-group">
+                <button type="button" onclick="addPubDirector()">+ Add Director</button>
+                <button type="button" onclick="removePubDirector()" class="btn-remove">- Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2>Financial Information</h2>
+          <br>
+          <div class="input-group">
+            <label for="tan_number" class="required-label">TAN Number</label>
+            <input type="text" id="tan_number" required name="tan_number" placeholder="AAAA00000A" 
+            pattern="[A-Z]{4}[0-9]{5}[A-Z]{1}" title="TAN must be 10 characters: 4 letters, 5 digits, 1 letter" maxlength="10">
+            <small style="color: #555;">
+              Format: 4 capital letters, 5 numbers, 1 capital letter
+            </small>
+          </div>
+
+          <div class="input-group">
+            <label for="tan_proof" class="required-label">Upload TAN Proof (PDF/JPEG only) (Max 2MB)</label>
+            <input type="file" id="tan_proof" required name="tan_proof" accept=".pdf,image/jpeg" >
+            <small id="tan_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
+          </div>
+
+          <div class="input-group">
+            <label for="gst_number" class="required-label">GST Number</label>
+            <input type="text" id="gst_number" required name="gst_number" placeholder="00AAAAA0000A0A0" 
+            pattern="^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$"
+            title="GST must be a 15-character alphanumeric code" maxlength="15">
+            <small style="color: #555;">
+              Format: 15 characters(e.g. 27ABCDE1234F1Z5)
+            </small>
+          </div>
+
+          <div class="input-group">
+            <label for="gst_proof" class="required-label">Upload GST Proof (PDF/JPEG only) (Max 2MB)</label>
+            <input type="file" id="gst_proof" required name="gst_proof" accept=".pdf,image/jpeg" >
+            <small id="gst_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
+          </div>
+
+          <div class="input-group">
+            <label for="turnover" class="required-label">Turnover (in cr)</label>
+            <input type="number" step="0.01" required id="turnover" name="turnover" placeholder="Enter turnover in crores" min="0" max="1000">
+          </div>
+          <p>Upload last three years Balance Sheet(Recent first)</p>
+          <div class="input-group">
+            <label for="bs_year1" class="required-label">Upload Balance Sheet(Year1) (PDF/JPEG only) (Max 2MB)</label>
+            <input type="file" id="bs_year1" required name="bs_year1" accept=".pdf,image/jpeg">
+            <small id="bs1_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
+          </div>
+
+          <div class="input-group">
+            <label for="bs_year2" class="required-label">Upload Balance Sheet(Year 2) (PDF/JPEG only) (Max 2MB)</label>
+            <input type="file" id="bs_year2" required name="bs_year2" accept=".pdf,image/jpeg">
+            <small id="bs2_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
+          </div>
+
+          <div class="input-group"> 
+            <label for="bs_year3" class="required-label">Upload Balance Sheet(Year 3) (PDF/JPEG only) (Max 2MB)</label>
+            <input type="file" id="bs_year3" required name="bs_year3" accept=".pdf,image/jpeg">
+            <small id="bs3_proof_error" style="color: red; display: none;">File must be under 2MB.</small>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2>Products & Services Offered</h2>
+          <br>
           <p>Please list the products or services your company offers. You can add more fields if needed.</p>
 
           <div id="product-services-container">
             <div class="input-group">
               <label for="product_1" class="required-label">Product/Service 1</label>
-              <input type="text" id="product_1"  required name="products[]" placeholder="Enter product or service" maxlength="100">
+              <input type="text" id="product_1" required name="products[]" placeholder="Enter product or service" maxlength="100">
             </div>
-
             <div class="input-group">
               <label for="product_2" class="required-label">Product/Service 2</label>
-              <input type="text" id="product_2"  required name="products[]" placeholder="Enter product or service" maxlength="100">
+              <input type="text" id="product_2" required name="products[]" placeholder="Enter product or service" maxlength="100">
             </div>
-
             <div class="input-group">
               <label for="product_3" class="required-label">Product/Service 3</label>
-              <input type="text" id="product_3" required  name="products[]" placeholder="Enter product or service"maxlength="100">
+              <input type="text" id="product_3" required name="products[]" placeholder="Enter product or service" maxlength="100">
             </div>
           </div>
-
-          <button type="button" onclick="addProductField()">+ Add More Product/Services</button>
+          <div class="button-group">
+            <button type="button" onclick="addProductField()">+ Add Product/Service</button>
+            <button type="button" onclick="removeProductField()" class="btn-remove">- Remove</button>
+          </div>
         </div>
 
-          <button type="submit" name="action" value="submit">Submit Details</button>
-
+        <button type="submit" name="action" value="submit">Submit Details</button>
       </form>
     </main>
   </div>

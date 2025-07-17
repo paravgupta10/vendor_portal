@@ -154,6 +154,54 @@ button:hover {
   text-decoration: underline;
 }
 
+.custom-alert {
+  position: fixed;
+  top: 55px;
+  right: 25px;
+  padding: 15px 40px 15px 20px;
+  border-radius: 8px;
+  color: white;
+  font-family: sans-serif;
+  font-size: 1rem;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  opacity: 0;
+  transform: translateX(100%);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.custom-alert.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.custom-alert.hide {
+  opacity: 0;
+  transform: translateX(100%);
+}
+
+.custom-alert.error {
+  background-color: #e74c3c; 
+}
+
+.custom-alert.success {
+  background-color: #2ecc71; 
+}
+
+.custom-alert .close-btn {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  font-size: 22px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.custom-alert .close-btn:hover {
+  color: #eee;
+}
 
 /* Responsive design */
 @media (max-width: 768px) {
