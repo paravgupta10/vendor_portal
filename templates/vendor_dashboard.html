@@ -116,7 +116,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.body.classList.add('loaded');
-        showSection('welcome'); // Ensure welcome section is shown on load
+        showSection('welcome'); 
     });
 
     function toggleSidebar() {
@@ -145,9 +145,6 @@
             s.classList.remove('show');
         });
 
-        // Get vendor status from a data attribute or directly from Flask context if available globally
-        // For simplicity, let's assume `vendorStatus` is available globally from Flask
-        // Or, you can pass it from Flask using a hidden input or data attribute on body
         const vendorStatus = "{{ vendor.status }}"; // Accessing Jinja2 variable in JS
 
         let targetSectionId;
@@ -159,7 +156,7 @@
             } else {
                 targetSectionId = 'featureUnavailableSection';
             }
-        } else { // Default to welcome if unknown sectionType
+        } else { 
             targetSectionId = 'welcomeSection';
         }
 
