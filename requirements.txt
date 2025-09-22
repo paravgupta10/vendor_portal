@@ -8,3 +8,4 @@ flask-mail
 itsdangerous
 gunicorn
 psycopg2-binary
+gevent==25.9.1 
