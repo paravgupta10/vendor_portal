@@ -134,12 +134,12 @@ def role_required(required_role):
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")  # your email
-app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")  # app password
-app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_USERNAME")
+app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")  
+app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD") 
+app.config['MAIL_DEFAULT_SENDER'] = os.getenv("MAIL_DEFAULT_SENDER") 
 
 mail = Mail(app)
-s = URLSafeTimedSerializer(app.secret_key)  # for generating tokens
+s = URLSafeTimedSerializer(app.secret_key)  
 
 #ROUTES
 @app.route('/')
@@ -217,7 +217,7 @@ def register():
     }
 
     # Send verification code via email
-    msg = Message("Your Verification Code", recipients=[email], sender="your_email@gmail.com")
+    msg = Message("Your Verification Code", recipients=[email])
     msg.body = f"Your verification code is {code}"
     mail.send(msg)
 
@@ -256,7 +256,7 @@ def resend_code():
     session_data['code'] = code
     session['email_verification'] = session_data
 
-    msg = Message("Your New Verification Code", recipients=[session_data['email']], sender="your_email@gmail.com")
+    msg = Message("Your New Verification Code", recipients=[session_data['email']])
     msg.body = f"Your new verification code is {code}"
     mail.send(msg)
 
